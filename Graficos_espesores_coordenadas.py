@@ -13,7 +13,7 @@ plt.xlabel('N')
 plt.ylabel('e')
 plt.show()
 
-figura_coordenadas, axes = plt.subplots(4,2)
+
 lista_n_coord = [1, 5, 10, 50, 100, 200, 400, 1000]
 for n in lista_n_coord:
     e = definicion_de_espesor(n)
@@ -23,3 +23,6 @@ for n in lista_n_coord:
     plt.plot(lista_coord_y, lista_coord_z, 'o', linewidth=3)
     plt.title('N = %s'%n)
     plt.show()
+plt.plot(lista_coord_y, lista_coord_z, 'o', linewidth=3)
+plt.title('N = %s' % n)
+plt.show()

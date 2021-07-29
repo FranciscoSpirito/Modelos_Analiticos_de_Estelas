@@ -22,15 +22,24 @@ class Estela(object):
 
         if (metodo=='linear'):
             for i in range(self.cantidad_coords_adentro_disco):
+                suma = 0
                 for j in range(self.cantidad_turbinas_izquierda):
-                    self.mergeada[i] += self.arreglo[i + self.cantidad_coords_adentro_disco*j]
+                    suma += self.arreglo[i + self.cantidad_coords_adentro_disco*j]
+                if suma <= 1:
+                    self.mergeada[i] = suma
+                else:
+                    self.mergeada[i] = 1
+
 
         elif (metodo=='rss'):
             for i in range(self.cantidad_coords_adentro_disco):
                 suma = 0
                 for j in range(self.cantidad_turbinas_izquierda):
                     suma += (self.arreglo[i + self.cantidad_coords_adentro_disco*j])**2
-                self.mergeada[i] = (suma)**0.5
+                if (suma)**0.5 <= 1:
+                    self.mergeada[i] = (suma)**0.5
+                else:
+                    self.mergeada[i] = 1
 
         elif (metodo=='largest'):
             if self.cantidad_turbinas_izquierda != 0:
