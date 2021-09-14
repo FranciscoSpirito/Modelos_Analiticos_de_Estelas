@@ -311,14 +311,15 @@ class Turbina(object):
 
             lista_dAi_normalizados = []
             lista_coord_normalizadas = []
+            titta_offset = no.pi/2
             for i in range(len(lista_ri)):
                 dif_titta = (2 * np.pi) / lista_n_i[i]  # Creacion del paso angular
                 j = 0
                 dAi_normalizado = np.pi * lista_areas_discos_dividido_pi[i] / lista_n_i[i]
                 while j < lista_n_i[i]:
                     titta = j * dif_titta
-                    y_i = (lista_ri[i] * np.cos(titta))
-                    z_i = (lista_ri[i] * np.sin(titta))
+                    y_i = (lista_ri[i] * np.cos(titta + titta_offset))
+                    z_i = (lista_ri[i] * np.sin(titta + titta_offset))
                     coord_disco_i = Coord(np.array([0, y_i, z_i]))
                     lista_coord_normalizadas.append(coord_disco_i)
                     lista_dAi_normalizados.append(dAi_normalizado)
