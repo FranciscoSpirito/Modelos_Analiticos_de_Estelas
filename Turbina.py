@@ -311,7 +311,7 @@ class Turbina(object):
 
             lista_dAi_normalizados = []
             lista_coord_normalizadas = []
-            titta_offset = no.pi/2
+            titta_offset = np.pi/2
             for i in range(len(lista_ri)):
                 dif_titta = (2 * np.pi) / lista_n_i[i]  # Creacion del paso angular
                 j = 0
