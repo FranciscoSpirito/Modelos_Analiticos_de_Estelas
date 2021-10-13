@@ -2,7 +2,6 @@ from __future__ import division
 # coding=utf-8
 import numpy as np
 from Coord import Coord
-from U_inf import U_inf
 
 class Turbina(object):
 
@@ -172,9 +171,11 @@ class Turbina(object):
             u_medio_disco = np.mean(u_adentro_disco)
             c_T_tab = self.c_T_tabulado(u_medio_disco)
             T_turbina = c_T_tab * integral_u2  # lo dividi por (0.5 * rho) porque luego dividire por eso
-            T_disponible = (u_medio_disco) ** 2 * (
-                        np.pi * (self.d_0 / 2) ** 2)  # lo dividi por (0.5 * rho) porque luego multiplicare por eso
-            self.c_T = T_turbina / T_disponible
+            T_disponible = (u_medio_disco) ** 2 * (np.pi * (self.d_0 / 2) ** 2)  # lo dividi por (0.5 * rho) porque luego multiplicare por eso
+            if T_disponible == 0 or T_turbina == 0:
+                self.c_T = 0
+            else:
+                self.c_T = T_turbina / T_disponible
 
 
     def calcular_c_P_Int_Det(self, estela, z_0, z_mast, u_inf):
@@ -202,7 +203,11 @@ class Turbina(object):
             rho = 1.225  # densidad del aire
             self.potencia = c_P_tab * integral_u3 * 0.5 * rho   # lo dividi por (0.5 * rho) porque luego dividire por eso
             P_disponible = (u_medio_disco)**3 * (np.pi*(self.d_0/2)**2)     # lo dividi por (0.5 * rho) porque luego multiplicare por eso
-            self.c_P = self.potencia / (0.5 * rho * P_disponible)
+            if P_disponible == 0 or self.potencia == 0:
+                self.c_P = 0
+            else:
+                self.c_P = self.potencia / (0.5 * rho * P_disponible)
+
 
     def calcular_P_Int_Det(self, estela, z_0, z_mast, u_inf):
 
