@@ -15,6 +15,7 @@ class Turbina(object):
         self.c_P = None
         self.estela_de_otras_turbinas = []
         self.potencia = None
+        self.u_adentro_del_disco= None
 
     def __repr__(self):
         return "Coordenada x y z : {} {} {} ".format(self.coord.x, self.coord.y, self.coord.z)
@@ -61,6 +62,7 @@ class Turbina(object):
                 u = u_inf.coord * (1 - estela.mergeada[i])
                 i += 1
                 u_adentro_disco = np.append(u_adentro_disco, u)
+            self.u_adentro_del_disco=u_adentro_disco
             u_adentro_disco2 = u_adentro_disco ** 2
             count = sum(u_adentro_disco2)
             u_medio_disco = np.mean(u_adentro_disco)
@@ -93,6 +95,7 @@ class Turbina(object):
                 u_inf.coord = coord
                 u_inf.perfil_flujo_base(z_mast, z_0)
                 u = u_inf.coord * (1 - estela.mergeada[i])
+
                 i += 1
                 u_adentro_disco = np.append(u_adentro_disco, u)
             u_adentro_disco3 = u_adentro_disco ** 3
@@ -166,7 +169,9 @@ class Turbina(object):
                 u = u_inf.coord * (1 - estela.mergeada[i])
                 i += 1
                 u_adentro_disco = np.append(u_adentro_disco, u)
+
             u_adentro_disco2 = u_adentro_disco ** 2
+
             lista_para_sumatoria = u_adentro_disco2 * self.lista_dAi
             integral_u2 = sum(lista_para_sumatoria)
             u_medio_disco = np.mean(u_adentro_disco)
@@ -195,6 +200,12 @@ class Turbina(object):
                 i += 1
                 u_adentro_disco = np.append(u_adentro_disco, u)
             u_adentro_disco3 = u_adentro_disco ** 3
+            '''ACA EDITO'''
+
+            self.u_adentro_del_disco = u_adentro_disco
+
+            '''ACA NO'''
+
             lista_para_sumatoria = u_adentro_disco3 * self.lista_dAi
             integral_u3 = sum(lista_para_sumatoria)
             u_medio_disco = np.mean(u_adentro_disco)
@@ -222,6 +233,7 @@ class Turbina(object):
                 i += 1
                 u_adentro_disco = np.append(u_adentro_disco, u)
             u_adentro_disco3 = u_adentro_disco ** 3
+
             lista_para_sumatoria = u_adentro_disco3 * self.lista_dAi
             integral_u3 = sum(lista_para_sumatoria)
             u_medio_disco = np.mean(u_adentro_disco)
