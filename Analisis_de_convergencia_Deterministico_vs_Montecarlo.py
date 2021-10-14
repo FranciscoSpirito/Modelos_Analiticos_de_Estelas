@@ -3,7 +3,6 @@ import matplotlib.pyplot as plt
 from calcular_u_en_coord_integral_deterministica import calcular_u_en_coord_integral_deterministica
 from calcular_u_en_coord_integral_de_montecarlo import calcular_u_en_coord_integral_de_montecarlo
 from Turbina_Rawson import Turbina_Rawson
-from Turbina import Turbina
 from Parque_de_turbinas import Parque_de_turbinas
 from Coord import Coord
 from U_inf import U_inf
@@ -113,54 +112,78 @@ coord = Coord(np.array([x_o, y_o, z_o]))
 gaussiana = Gaussiana()
 frandsen = Frandsen()
 jensen = Jensen()
-modelo_array = [jensen, frandsen, gaussiana]
+# modelo_array = [jensen, frandsen, gaussiana]
+modelo_array = [jensen, gaussiana]
 metodo_array = ['linear', 'rss', 'largest']
-aux = np.log10(300)
-lista_aux = np.logspace(1,aux,num = 100)
+aux = np.log10(100)
+lista_aux = np.logspace(1,aux,num = 10)
 lista_aux = [ round(i) for i in lista_aux ]
 lista_n=[]
 for item in lista_aux:
     if item not in lista_n:
         lista_n.append(item)
+print(lista_n)
+
+# """Deterministico vs Motencarlo"""
+# for modelo in modelo_array:
+#     for metodo in metodo_array:
+#         lista_potencia_modelo_deterministico = []
+#         lista_potencia_modelo_montecarlo = []
+#         for cantidad_de_puntos in lista_n:
+#             espesor = turbina_0.definicion_de_espesor(cantidad_de_puntos)
+#             lista_coord_normalizadas, lista_dAi_normalizados = turbina_0.coordenadas_y_areas_normalizadas(
+#                 cantidad_de_puntos, espesor)
+#             calcular_u_en_coord_integral_deterministica(modelo, metodo, coord, parque_de_turbinas, u_inf,
+#                                                         lista_coord_normalizadas, lista_dAi_normalizados)
+#             aux = sumar_potencia(lista_turbinas)
+#             lista_potencia_modelo_deterministico.append(aux)
+#             reiniciar_turbinas(lista_turbinas)
+#             calcular_u_en_coord_integral_de_montecarlo(modelo, metodo, coord, parque_de_turbinas, u_inf,
+#                                                        cantidad_de_puntos)
+#             aux = sumar_potencia(lista_turbinas)
+#             lista_potencia_modelo_montecarlo.append(aux)
+#             reiniciar_turbinas(lista_turbinas)
+#         puntos = lista_n
+#         plt.plot(puntos, lista_potencia_modelo_deterministico, 'o', label=u'Deterministico', linewidth=3)
+#         plt.plot(puntos, lista_potencia_modelo_montecarlo, 'o', label=u'Montecarlo', linewidth=3)
+#         plt.title([modelo, metodo])
+#         plt.legend(fontsize=10)
+#         plt.xlabel(u'N', fontsize=10)
+#         plt.ylabel(r'Potencia', fontsize=10)
+#         plt.grid()
+#         plt.show()
+# puntos = lista_n
+# plt.plot(puntos, lista_potencia_modelo_deterministico, 'o', label=u'Deterministico', linewidth=3)
+# plt.plot(puntos, lista_potencia_modelo_montecarlo, 'o', label=u'Montecarlo', linewidth=3)
+# plt.title([modelo, metodo])
+# plt.legend(fontsize=10)
+# plt.xlabel(u'N', fontsize=10)
+# plt.ylabel(r'Potencia', fontsize=10)
+# plt.grid()
+# plt.show()
+
+"""Montecarlo"""
 
 for modelo in modelo_array:
     for metodo in metodo_array:
         lista_potencia_modelo_deterministico = []
-        lista_potencia_modelo_montecarlo = []
         for cantidad_de_puntos in lista_n:
-            espesor = turbina_0.definicion_de_espesor(cantidad_de_puntos)
-            lista_coord_normalizadas, lista_dAi_normalizados = turbina_0.coordenadas_y_areas_normalizadas(
-                cantidad_de_puntos, espesor)
-            calcular_u_en_coord_integral_deterministica(modelo, metodo, coord, parque_de_turbinas, u_inf,
-                                                        lista_coord_normalizadas, lista_dAi_normalizados)
+            calcular_u_en_coord_integral_de_montecarlo(modelo, metodo, coord, parque_de_turbinas, u_inf, cantidad_de_puntos)
             aux = sumar_potencia(lista_turbinas)
             lista_potencia_modelo_deterministico.append(aux)
             reiniciar_turbinas(lista_turbinas)
-            calcular_u_en_coord_integral_de_montecarlo(modelo, metodo, coord, parque_de_turbinas, u_inf,
-                                                       cantidad_de_puntos)
-            aux = sumar_potencia(lista_turbinas)
-            lista_potencia_modelo_montecarlo.append(aux)
-            reiniciar_turbinas(lista_turbinas)
         puntos = lista_n
-        plt.plot(puntos, lista_potencia_modelo_deterministico, 'o', label=u'Deterministico', linewidth=3)
-        plt.plot(puntos, lista_potencia_modelo_montecarlo, 'o', label=u'Montecarlo', linewidth=3)
-        plt.title([modelo, metodo])
-        plt.legend(fontsize=10)
-        plt.xlabel(u'N', fontsize=10)
-        plt.ylabel(r'Potencia', fontsize=10)
-        plt.grid()
-        plt.show()
-puntos = lista_n
-plt.plot(puntos, lista_potencia_modelo_deterministico, 'o', label=u'Deterministico', linewidth=3)
-plt.plot(puntos, lista_potencia_modelo_montecarlo, 'o', label=u'Montecarlo', linewidth=3)
-plt.title([modelo, metodo])
-plt.legend(fontsize=10)
+        modelo_metodo = [modelo,metodo]
+        plt.plot(puntos, lista_potencia_modelo_deterministico, label= u'{}'.format(modelo_metodo), linewidth=3)
+        plt.legend()
 plt.xlabel(u'N', fontsize=10)
 plt.ylabel(r'Potencia', fontsize=10)
 plt.grid()
+plt.title('Montecarlo')
 plt.show()
 
 
+"""Deterministico"""
 # for modelo in modelo_array:
 #     for metodo in metodo_array:
 #         lista_potencia_modelo_deterministico = []
@@ -174,19 +197,15 @@ plt.show()
 #             lista_potencia_modelo_deterministico.append(aux)
 #             reiniciar_turbinas(lista_turbinas)
 #         puntos = lista_n
-#         plt.plot(puntos, lista_potencia_modelo_deterministico, 'o', label=u'Deterministico', linewidth=3)
-#         plt.title([modelo, metodo])
-#         plt.xlabel(u'N', fontsize=10)
-#         plt.ylabel(r'Potencia', fontsize=10)
-#         plt.grid()
-#         plt.show()
-# puntos = lista_n
-# plt.plot(puntos, lista_potencia_modelo_deterministico, 'o', label=u'Deterministico', linewidth=3)
-# plt.title([modelo, metodo])
+#         modelo_metodo = [modelo,metodo]
+#         plt.plot(puntos, lista_potencia_modelo_deterministico, label= u'{}'.format(modelo_metodo), linewidth=3)
+#         plt.legend()
 # plt.xlabel(u'N', fontsize=10)
 # plt.ylabel(r'Potencia', fontsize=10)
 # plt.grid()
+# plt.title('Deterministico')
 # plt.show()
+
 
 
 

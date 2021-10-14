@@ -22,10 +22,25 @@ class Gaussiana(Modelo):
         # por no ser un caso de laboratorio)
         # self.k_estrella = -0.0016
         # self.epsilon = 0.4082
+#Terreno Plano
+    # def evaluar_deficit_normalizado(self, turbina, coord_selec):
+    #     sigma_n = self.k_estrella * ((coord_selec.x-turbina.coord.x)/turbina.d_0) + self.epsilon
+    #     c = 1 - (1-(turbina.c_T/(8*(sigma_n**2))))**(0.5)
+    #     return c * exp(-(((coord_selec.y-turbina.coord.y)/turbina.d_0)**2 + ((coord_selec.z-turbina.coord.z)/turbina.d_0)**2) / (2 * (sigma_n**2)))
 
     def evaluar_deficit_normalizado(self, turbina, coord_selec):
-        sigma_n = self.k_estrella * ((coord_selec.x-turbina.coord.x)/turbina.d_0) + self.epsilon
+        sigma_n = (self.k_estrella * (abs(coord_selec.x-turbina.coord.x)/turbina.d_0) + self.epsilon)*turbina.d_0
+        verificacion = (1 - (turbina.c_T / (8 * (sigma_n ** 2))))
+        if verificacion < 0:
+            print('Coord. Turbina aguas arriba =', turbina.coord)
+            print('Coord. a evaluar =', coord_selec)
+            print('CT de turbina aguas arriba =', turbina.c_T)
         c = 1 - (1-(turbina.c_T/(8*(sigma_n**2))))**(0.5)
+        verificacion = c * exp(-(((coord_selec.y-turbina.coord.y)/turbina.d_0)**2 + ((coord_selec.z-turbina.coord.z)/turbina.d_0)**2) / (2 * (sigma_n**2)))
+        if verificacion == None:
+            print('Coord. Turbina aguas arriba =', turbina.coord)
+            print('Coord. a evaluar =', coord)
+            print('CT de turbina aguas arriba =', turbina.c_T)
         return c * exp(-(((coord_selec.y-turbina.coord.y)/turbina.d_0)**2 + ((coord_selec.z-turbina.coord.z)/turbina.d_0)**2) / (2 * (sigma_n**2)))
 
     def __repr__(self):
