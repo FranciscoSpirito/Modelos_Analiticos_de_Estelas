@@ -23,7 +23,6 @@ def calcular_u_en_coord_integral_deterministica(modelo_deficit, metodo_superposi
 
     parque_de_turbinas.ordenar_turbinas_de_izquierda_a_derecha()
     turbinas_a_la_izquierda_de_coord = parque_de_turbinas.turbinas_a_la_izquierda_de_una_coord(coord)
-
     # lista que guardara los deficits normalizados generados por todas las turbinas a la izquierda de coord
     deficit_normalizado_en_coord = []
 

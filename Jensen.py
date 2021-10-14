@@ -27,13 +27,12 @@ class Jensen(Modelo):
 #Terreno irregular
     def evaluar_deficit_normalizado(self, turbina, coord_selec):
         r_w = (turbina.d_0/2) + self.k_wake * (abs(turbina.coord.x - coord_selec.x))
-        if (((turbina.coord.y - coord_selec.y)**2 + (turbina.coord.z - coord_selec.z)**2)**0.5 <= (r_w / 2)):
-            verificacion = (1 - (1 - turbina.c_T)**0.5 ) / (1 + (2*(self.k_wake)*abs(turbina.coord.x-coord_selec.x))/turbina.d_0)**2
-            if verificacion == None:
-                print('Coord. Turbina aguas arriba =', turbina.coord)
-                print('Coord. a evaluar =', coord)
-                print('CT de turbina aguas arriba =', turbina.c_T)
-            return (1 - (1 - turbina.c_T)**0.5 ) / (1 + (2*(self.k_wake)*abs(turbina.coord.x-coord_selec.x))/turbina.d_0)**2
+        if (((turbina.coord.y - coord_selec.y)**2 + (turbina.coord.z - coord_selec.z)**2)**0.5 <= r_w):
+            if (1 - turbina.c_T)<0:
+                print('coord turbina aguas arriba',turbina.coord)
+                print('CT turbina aguas arriba', turbina.c_T)
+                print('coord', coord_selec)
+            return (1 - (1 - turbina.c_T)**0.5 ) / ((1 + (2*(self.k_wake)*abs(turbina.coord.x-coord_selec.x))/turbina.d_0)**2)
         else:
             return 0
 

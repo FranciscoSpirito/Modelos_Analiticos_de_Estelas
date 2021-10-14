@@ -68,7 +68,10 @@ class Turbina(object):
             integral_u2 = (volume * count)/N
             T_turbina = c_T_tab * integral_u2   # lo dividi por (0.5 * rho) porque luego dividire por eso
             T_disponible = (u_medio_disco)**2 * (np.pi*(self.d_0/2)**2)     # lo dividi por (0.5 * rho) porque luego multiplicare por eso
-            self.c_T = T_turbina / T_disponible
+            if T_disponible == 0 or T_turbina == 0:
+                self.c_T = 0
+            else:
+                self.c_T = T_turbina / T_disponible
 
     def calcular_c_P_Montecarlo(self, estela, coord_random_adentro_disco, z_0, z_mast, u_inf, N):
 
@@ -103,7 +106,10 @@ class Turbina(object):
             rho = 1.225  # densidad del aire
             self.potencia = c_P_tab * integral_u3 * 0.5 * rho   # lo dividi por (0.5 * rho) porque luego dividire por eso
             P_disponible = (u_medio_disco)**3 * (np.pi*(self.d_0/2)**2)     # lo dividi por (0.5 * rho) porque luego multiplicare por eso
-            self.c_P = self.potencia / (0.5 * rho * P_disponible)
+            if P_disponible == 0 or self.potencia == 0:
+                self.c_P = 0
+            else:
+                self.c_P = self.potencia / (0.5 * rho * P_disponible)
 
     def calcular_P_Montecarlo(self, estela, coord_random_adentro_disco, z_0, z_mast, u_inf, N):
 
@@ -142,7 +148,10 @@ class Turbina(object):
             rho = 1.225  # densidad del aire
             self.potencia = c_P_tab * integral_u3 * 0.5 * rho   # lo dividi por (0.5 * rho) porque luego dividire por eso
             P_disponible = (u_medio_disco)**3 * (np.pi*(self.d_0/2)**2)     # lo dividi por (0.5 * rho) porque luego multiplicare por eso
-            self.c_P = self.potencia / (0.5 * rho * P_disponible)
+            if P_disponible == 0 or self.potencia == 0:
+                self.c_P = 0
+            else:
+                self.c_P = self.potencia / (0.5 * rho * P_disponible)
             self.potencia = (10**-3) * self.c_P * 0.5 * rho * (u_medio_disco)**3 * ((self.d_0)*0.5)**2 * np.pi
 
 
@@ -234,7 +243,10 @@ class Turbina(object):
             rho = 1.225  # densidad del aire
             self.potencia = c_P_tab * integral_u3 * 0.5 * rho   # lo dividi por (0.5 * rho) porque luego dividire por eso
             P_disponible = (u_medio_disco)**3 * (np.pi*(self.d_0/2)**2)     # lo dividi por (0.5 * rho) porque luego multiplicare por eso
-            self.c_P = self.potencia / (0.5 * rho * P_disponible)
+            if P_disponible == 0 or self.potencia == 0:
+                self.c_P = 0
+            else:
+                self.c_P = self.potencia / (0.5 * rho * P_disponible)
             self.potencia = (10**-3) * self.c_P * 0.5 * rho * (u_medio_disco)**3 * ((self.d_0)*0.5)**2 * np.pi
 
 

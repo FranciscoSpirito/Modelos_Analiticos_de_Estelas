@@ -131,47 +131,73 @@ modelo_array = [gaussiana,frandsen,jensen]
 metodo_array = ['linear', 'rss', 'largest']
 lista_n = np.logspace(1,3,num = 100)
 
+"""Angulos en el eje x"""
 
-for cantidad_de_puntos in lista_n:
-
-    lista_potencia_modelo_deterministico = []
-    lista_potencia_modelo_montecarlo = []
-    espesor = turbina_0.definicion_de_espesor(cantidad_de_puntos)
-    lista_coord_normalizadas, lista_dAi_normalizados = turbina_0.coordenadas_y_areas_normalizadas(cantidad_de_puntos, espesor)
-    for angulo in angulos:
-        parque_de_turbinas.rotar(angulo)
-        calcular_u_en_coord_integral_deterministica(gaussiana, 'rss', coord, parque_de_turbinas, u_inf, lista_coord_normalizadas, lista_dAi_normalizados)
-        aux = sumar_potencia(lista_turbinas)
-        lista_potencia_modelo_deterministico.append(aux)
-        reiniciar_turbinas(lista_turbinas)
-
-        cantidad_de_puntos = int(cantidad_de_puntos)
-        calcular_u_en_coord_integral_de_montecarlo(gaussiana, 'rss', coord, parque_de_turbinas, u_inf, cantidad_de_puntos)
-        aux = sumar_potencia(lista_turbinas)
-        lista_potencia_modelo_montecarlo.append(aux)
-        reiniciar_turbinas(lista_turbinas)
-    plt.plot(angulos, lista_potencia_modelo_deterministico,'o', label = u'Deterministico', linewidth=3)
-    plt.plot(angulos,lista_potencia_modelo_montecarlo,'o', label = u'Montecarlo', linewidth=3)
-    plt.title(cantidad_de_puntos)
-    plt.legend(fontsize = 10, loc = 'center right')
-    plt.xlabel(u'Angulo º ', fontsize=10)
-    plt.ylabel(r'Potencia', fontsize=10)
-    plt.grid()
-    plt.show()
-
-
-
-
-# angulos_reducidos = [30,270]
+# for cantidad_de_puntos in lista_n:
 #
+#     lista_potencia_modelo_deterministico = []
+#     lista_potencia_modelo_montecarlo = []
+#     espesor = turbina_0.definicion_de_espesor(cantidad_de_puntos)
+#     lista_coord_normalizadas, lista_dAi_normalizados = turbina_0.coordenadas_y_areas_normalizadas(cantidad_de_puntos, espesor)
+#     for angulo in angulos:
+#         parque_de_turbinas.rotar(angulo)
+#         calcular_u_en_coord_integral_deterministica(gaussiana, 'rss', coord, parque_de_turbinas, u_inf, lista_coord_normalizadas, lista_dAi_normalizados)
+#         aux = sumar_potencia(lista_turbinas)
+#         lista_potencia_modelo_deterministico.append(aux)
+#         reiniciar_turbinas(lista_turbinas)
 #
+#         cantidad_de_puntos = int(cantidad_de_puntos)
+#         calcular_u_en_coord_integral_de_montecarlo(gaussiana, 'rss', coord, parque_de_turbinas, u_inf, cantidad_de_puntos)
+#         aux = sumar_potencia(lista_turbinas)
+#         lista_potencia_modelo_montecarlo.append(aux)
+#         reiniciar_turbinas(lista_turbinas)
+#     plt.plot(angulos, lista_potencia_modelo_deterministico,'o', label = u'Deterministico', linewidth=3)
+#     plt.plot(angulos,lista_potencia_modelo_montecarlo,'o', label = u'Montecarlo', linewidth=3)
+#     plt.title(cantidad_de_puntos)
+#     plt.legend(fontsize = 10, loc = 'center right')
+#     plt.xlabel(u'Angulo º ', fontsize=10)
+#     plt.ylabel(r'Potencia', fontsize=10)
+#     plt.grid()
+#     plt.show()
+
+
+"""Solo int deterministica"""
+# for cantidad_de_puntos in lista_n:
+#
+#     lista_potencia_modelo_deterministico = []
+#     espesor = turbina_0.definicion_de_espesor(cantidad_de_puntos)
+#     lista_coord_normalizadas, lista_dAi_normalizados = turbina_0.coordenadas_y_areas_normalizadas(cantidad_de_puntos, espesor)
+#     for angulo in angulos:
+#         parque_de_turbinas.rotar(angulo)
+#         calcular_u_en_coord_integral_deterministica(gaussiana, 'rss', coord, parque_de_turbinas, u_inf, lista_coord_normalizadas, lista_dAi_normalizados)
+#         aux = sumar_potencia(lista_turbinas)
+#         lista_potencia_modelo_deterministico.append(aux)
+#         reiniciar_turbinas(lista_turbinas)
+#     plt.plot(angulos, lista_potencia_modelo_deterministico,'o', label = u'Deterministico', linewidth=3)
+#     plt.title(cantidad_de_puntos)
+#     plt.legend(fontsize = 10, loc = 'center right')
+#     plt.xlabel(u'Angulo º ', fontsize=10)
+#     plt.ylabel(r'Potencia', fontsize=10)
+#     plt.grid()
+#     plt.show()
+
+
+
+
+
+
+""" Solo dos angulos. Cantidad de puntos en el eje x """
+
+angulos_reducidos = [30,270]
+
+
 # for modelo in modelo_array:
 #     for metodo in metodo_array:
 #         for angulo in angulos_reducidos:
 #             parque_de_turbinas.rotar(angulo)
 #             lista_potencia_modelo_deterministico = []
 #             lista_potencia_modelo_montecarlo = []
-#             for cantidad_de_puntos in range(100,1100,100):
+#             for cantidad_de_puntos in range(10,1100,100):
 #                 espesor = turbina_0.definicion_de_espesor(cantidad_de_puntos)
 #                 lista_coord_normalizadas, lista_dAi_normalizados = turbina_0.coordenadas_y_areas_normalizadas(cantidad_de_puntos, espesor)
 #                 calcular_u_en_coord_integral_deterministica(gaussiana, 'largest', coord, parque_de_turbinas, u_inf, lista_coord_normalizadas, lista_dAi_normalizados)
@@ -193,5 +219,28 @@ for cantidad_de_puntos in lista_n:
 #             plt.show()
 
 
+""" Solo integral deterministica """
+
+for modelo in modelo_array:
+    for metodo in metodo_array:
+        for angulo in angulos_reducidos:
+            parque_de_turbinas.rotar(angulo)
+            lista_potencia_modelo_deterministico = []
+            lista_puntos = np.arange(1,200,10)
+            for cantidad_de_puntos in lista_puntos:
+                espesor = turbina_0.definicion_de_espesor(cantidad_de_puntos)
+                lista_coord_normalizadas, lista_dAi_normalizados = turbina_0.coordenadas_y_areas_normalizadas(cantidad_de_puntos, espesor)
+                calcular_u_en_coord_integral_deterministica(gaussiana, 'largest', coord, parque_de_turbinas, u_inf, lista_coord_normalizadas, lista_dAi_normalizados)
+                aux = sumar_potencia(lista_turbinas)
+                lista_potencia_modelo_deterministico.append(aux)
+                reiniciar_turbinas(lista_turbinas)
+            puntos = lista_puntos
+            plt.plot(puntos, lista_potencia_modelo_deterministico, 'o', label = u'Deterministico', linewidth=3)
+            plt.title([str(modelo), str(metodo), angulo])
+            plt.legend(fontsize=10)
+            plt.xlabel(u'N', fontsize=10)
+            plt.ylabel(r'Potencia', fontsize=10)
+            plt.grid()
+            plt.show()
 
 
