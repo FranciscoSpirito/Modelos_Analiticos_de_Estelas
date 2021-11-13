@@ -1,2 +1,4 @@
 __pycache__/
 .idea/
+data/
+jupyter_notebooks/.ipynb_checkpoints/
