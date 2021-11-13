@@ -3,7 +3,6 @@ from scipy.interpolate import LinearNDInterpolator
 
 class Iso_Superficie(object):
 
-
     def __init__(self, X, Y, Z, U, V, W):
         """
         Compute a set of streamlines covering the given velocity field.
@@ -13,7 +12,9 @@ class Iso_Superficie(object):
         U and V - 2D arrays of the velocity field.
         """
 
-
+        # No estoy seguro que esto funcione bien siempre. Estamos seguros
+        # que queremos ser tan 'precavidos' y no conviene trabajar simpre con
+        # los mismos tipos de datos
         xa = np.asanyarray(X)
         ya = np.asanyarray(Y)
         za = np.asanyarray(Z)
@@ -23,9 +24,16 @@ class Iso_Superficie(object):
         self.u = U
         self.v = V
         self.w = W
+        # Esto puede fallar si la lista no está ordenada como vos pensás
         self.dx = abs((self.x[-1] - self.x[0]) / (self.x.size - 1))  # assume a regular grid
         self.dy = abs((self.y[-1] - self.y[0]) / (self.y.size - 1))  # assume a regular grid
+        # El dr acá resulta del tamaño de la grilla pero no creo que sea una
+        # restricción válida, no veo ninguna razón para limitarnos a esto.
+        # Pondría un parámetro de entrada
         self.dr = np.sqrt(self.dx**2 + self.dy**2)
+
+        # Lo del fill value quedaría fuera si limitamos el tamaño de la malla
+        # a algo que quede dentro del dominio donde hay datos.
         self.fill_value_u = np.mean(self.u)
         self.fill_value_v = np.mean(self.v)
         self.fill_value_w = np.mean(self.w)
@@ -55,6 +63,8 @@ class Iso_Superficie(object):
         Compute a streamline extending in one direction from the given point.
         """
 
+        #Estos minimos y máximos podrían ser propiedad de la clase y
+        #calcularlos en el init para no repetir el cálculo cada vez
         xmin = np.amin(self.x)
         xmax = np.amax(self.x)
         ymin = np.amin(self.y)
@@ -76,7 +86,6 @@ class Iso_Superficie(object):
             sx.append(x)
             sy.append(y)
 
-
         return sx, sy
 
     def longitud_streamline(self, x, y):
@@ -92,5 +101,3 @@ class Iso_Superficie(object):
         f_uvw = self._interp_w(x, y) / (self._interp_u(x, y) ** 2 + self._interp_v(x, y) ** 2)
         dz = np.trapz(f_uvw, x = s_i)
         return dz
-
-

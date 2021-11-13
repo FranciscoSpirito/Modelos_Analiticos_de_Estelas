@@ -7,8 +7,9 @@ import matplotlib.pyplot as plt
 from Coord import Coord
 
 """Con datos de CFD"""
-ruta  = r"C:\Users\chesp\Documents\Ingenieria Mecanica\Tesis\Modelos_Analiticos_de_Estelas\Datos_Rawson_sin_Turbinas\U_superficie_gondolas(1).raw"
+ruta = r"C:\Users\chesp\Documents\Ingenieria Mecanica\Tesis\Modelos_Analiticos_de_Estelas\Datos_Rawson_sin_Turbinas\U_superficie_gondolas(1).raw"
 xl, yl, zl, ul, vl, wl = cargar_datos('isosuperficie', ruta)
+#Las operaciones de abajo no hacen nada, xl etc ya son np.arrays
 x = np.array(xl)
 y = np.array(yl)
 z = np.array(zl)
@@ -76,5 +77,3 @@ plt.plot(x_s1,y_s1)
 plt.plot(x_s2,y_s2)
 plt.plot(x_s3,y_s3)
 plt.show()
-
-
