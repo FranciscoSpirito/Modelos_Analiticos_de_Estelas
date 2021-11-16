@@ -1,6 +1,10 @@
 import numpy as np
 from scipy.interpolate import LinearNDInterpolator
 
+# Hay que dejar alguna referencia al proyecto original
+# https://github.com/rougier/windmap
+
+
 class Iso_Superficie(object):
 
     def __init__(self, X, Y, Z, U, V, W):
