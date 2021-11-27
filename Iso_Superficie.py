@@ -1,5 +1,5 @@
 import numpy as np
-from scipy.interpolate import LinearNDInterpolator
+from scipy.interpolate import griddata, RectBivariateSpline
 
 class Iso_Superficie(object):
 
@@ -13,27 +13,36 @@ class Iso_Superficie(object):
         U and V - 2D arrays of the velocity field.
         """
 
-
-        xa = np.asanyarray(X)
-        ya = np.asanyarray(Y)
-        za = np.asanyarray(Z)
-        self.x = xa
-        self.y = ya
-        self.z = za
+        self.x = X
+        self.y = Y
+        self.z = Z
         self.u = U
         self.v = V
         self.w = W
-        self.dx = abs((self.x[-1] - self.x[0]) / (self.x.size - 1))  # assume a regular grid
-        self.dy = abs((self.y[-1] - self.y[0]) / (self.y.size - 1))  # assume a regular grid
-        self.dr = np.sqrt(self.dx**2 + self.dy**2)
-        self.fill_value_u = np.mean(self.u)
-        self.fill_value_v = np.mean(self.v)
-        self.fill_value_w = np.mean(self.w)
-        self.fill_value_z = np.mean(self.z)
-        self._interp_u = LinearNDInterpolator(list(zip(self.x, self.y)), self.u, fill_value=self.fill_value_u)
-        self._interp_v = LinearNDInterpolator(list(zip(self.x, self.y)), self.v, fill_value=self.fill_value_v)
-        self._interp_w = LinearNDInterpolator(list(zip(self.x, self.y)), self.w, fill_value=self.fill_value_w)
-        self._interp_z = LinearNDInterpolator(list(zip(self.x, self.y)), self.z, fill_value=self.fill_value_z)
+
+    # Definimos una malla menos densa, rectangular y uniforme para un mejor manejo de los datos
+    # npois: define la densidad de la grilla
+    # meshXmin, meshXmax, meshYmin, meshYmax definen el dominio
+    def redefinicion_de_grilla(self, npois, meshXmin, meshXmax, meshYmin, meshYmax):
+
+        npoiX, npoiY = npois, npois
+
+        xg = np.linspace(meshXmin, meshXmax, npoiX)
+        yg = np.linspace(meshYmin, meshYmax, npoiY)
+
+        XG, YG = np.meshgrid(xg, yg)
+
+        # Interpolación de variables output de OF sobre la grilla regular
+        self.ZG = griddata((self.x, self.y), self.z, (XG, YG), method='linear')
+        self.UG = griddata((self.x, self.y), self.u, (XG, YG), method='linear')
+        self.VG = griddata((self.x, self.y), self.v, (XG, YG), method='linear')
+        self.WG = griddata((self.x, self.y), self.w, (XG, YG), method='linear')
+
+        # Definir interpoladores en base a la grilla regular
+        self._interp_u = RectBivariateSpline(xg, yg, self.UG.T)  # Atention! transposition needed to make it work properly
+        self._interp_v = RectBivariateSpline(xg, yg, self.VG.T)
+        self._interp_w = RectBivariateSpline(xg, yg, self.WG.T)
+        self._interp_z = RectBivariateSpline(xg, yg, self.ZG.T)
 
 
     def streamline_in_coord(self, coord_turbina):
