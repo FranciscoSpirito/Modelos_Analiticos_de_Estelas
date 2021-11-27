@@ -1,6 +1,8 @@
 import numpy as np
 from scipy.interpolate import griddata, RectBivariateSpline
 
+# Proyecto original: https://github.com/rougier/windmap
+
 class Iso_Superficie(object):
 
     def __init__(self, X, Y, Z, U, V, W, npois):
@@ -12,46 +14,41 @@ class Iso_Superficie(object):
         U and V - 2D arrays of the velocity field.
         """
 
-        self.x = X
-        self.y = Y
-        self.z = Z
-        self.u = U
-        self.v = V
-        self.w = W
-
         # Definicion de densidad y limites de grilla
         npoiX, npoiY = npois, npois
-        meshXmin, meshXmax = 1000, 5500
-        meshYmin, meshYmax = 500, 5000
-        xg = np.linspace(meshXmin, meshXmax, npoiX)
-        yg = np.linspace(meshYmin, meshYmax, npoiY)
-        XG, YG = np.meshgrid(xg, yg)
+        self.meshXmin, self.meshXmax = 1000, 5500
+        self.meshYmin, self.meshYmax = 500, 5000
+        self.xg = np.linspace(self.meshXmin, self.meshXmax, npoiX)
+        self.yg = np.linspace(self.meshYmin, self.meshYmax, npoiY)
+        self.XG, self.YG = np.meshgrid(self.xg, self.yg)
 
         # Interpolación de variables output de OF sobre la grilla regular
-        self.ZG = griddata((self.x, self.y), self.z, (XG, YG), method='linear')
-        self.UG = griddata((self.x, self.y), self.u, (XG, YG), method='linear')
-        self.VG = griddata((self.x, self.y), self.v, (XG, YG), method='linear')
-        self.WG = griddata((self.x, self.y), self.w, (XG, YG), method='linear')
+        ZG = griddata((X, Y), Z, (self.XG, self.YG), method='linear')
+        UG = griddata((X, Y), U, (self.XG, self.YG), method='linear')
+        VG = griddata((X, Y), V, (self.XG, self.YG), method='linear')
+        WG = griddata((X, Y), W, (self.XG, self.YG), method='linear')
 
         # Definir interpoladores en base a la grilla regular
-        self._interp_u = RectBivariateSpline(xg, yg, self.UG.T)
-        self._interp_v = RectBivariateSpline(xg, yg, self.VG.T)
-        self._interp_w = RectBivariateSpline(xg, yg, self.WG.T)
-        self._interp_z = RectBivariateSpline(xg, yg, self.ZG.T)
+        self._interp_u = RectBivariateSpline(self.xg, self.yg, UG.T)
+        self._interp_v = RectBivariateSpline(self.xg, self.yg, VG.T)
+        self._interp_w = RectBivariateSpline(self.xg, self.yg, WG.T)
+        self._interp_z = RectBivariateSpline(self.xg, self.yg, ZG.T)
 
 
     # Genera un streamline desde el punto x0 y0 hacia adelante o atras
-    def _makeHalfStreamline(x0, y0, xmin, xmax, ymin, ymax, dr, sign):
+    def _makeHalfStreamline(self, x0, y0, xmin, xmax, ymin, ymax, dr, sign):
         """
         Compute a streamline extending in one direction from the given point.
         """
 
         sx = []
         sy = []
+        ss = []
         sz = []
 
         x = x0
         y = y0
+        s = 0.
         dz = 0.
 
         while xmin <= x <= xmax and ymin <= y <= ymax:
@@ -59,29 +56,34 @@ class Iso_Superficie(object):
             v = self._interp_v(x, y).item()
             w = self._interp_w(x, y).item()
 
-            scale = sign * (dr / np.sqrt(u ** 2 + v ** 2 + w ** 2))
+            scale = sign * (dr / np.sqrt(u ** 2 + v ** 2))
+            scale2 = sign * (dr / np.sqrt(u ** 2 + v ** 2 + w**2))
 
             x += scale * u
             y += scale * v
-            dz += scale * w
-            z = self._interp_z(x, y).item() + dz
+            # Here we may compute the actual s in 3D and also integrate the \Delta z
+            dz += scale2 * w
+            s += np.sqrt(dr ** 2 + (scale2 * w) ** 2)
 
             sx.append(x)
             sy.append(y)
-            sz.append(z)
+            ss.append(s)
+            sz.append(dz)
 
-        return sx, sy, sz
+        return sx, sy, ss, sz
 
-    def _makeStreamline(x0, y0, xmin, xmax, ymin, ymax, dr):
+
+    def _makeStreamline(self, x0, y0, xmin, xmax, ymin, ymax, dr):
         """
         Compute a streamline extending in both directions from the given point.
         """
 
-        sx, sy, sz = _makeHalfStreamline(x0, y0, xmin, xmax, ymin, ymax, dr, 1)  # forwards
-        rx, ry, rz = _makeHalfStreamline(x0, y0, xmin, xmax, ymin, ymax, dr, -1)  # backwards
+        sx, sy, ss, sz = self._makeHalfStreamline(x0, y0, xmin, xmax, ymin, ymax, dr, 1)  # forwards
+        rx, ry, rs, rz = self._makeHalfStreamline(x0, y0, xmin, xmax, ymin, ymax, dr, -1)  # backwards
 
         rx.reverse()
         ry.reverse()
+        rs.reverse()
         rz.reverse()
 
         # Busqueda de Semilla para corregir desplazamiento en z, buscamos comenzar desde el w_min, lo que indicaria el punto mas cercano a la isosuperficie
@@ -93,18 +95,40 @@ class Iso_Superficie(object):
             w_i.append(self._interp_w(x, y).item())
         x_semilla = ssx[w_i.index(min(w_i))]
         y_semilla = ssy[w_i.index(min(w_i))]
-        #     x_semilla = x0
-        #     y_semilla = y0
 
-        sx, sy, sz = _makeHalfStreamline(x_semilla, y_semilla, xmin - dr, xmax + dr, ymin - dr, ymax + dr, dr,
-                                         1)  # forwards
-        rx, ry, rz = _makeHalfStreamline(x_semilla, y_semilla, xmin - dr, xmax + dr, ymin - dr, ymax + dr, dr,
-                                         -1)  # backwards
+        # Recalculamos streamlines desde las nuevas semillas
+        sx, sy, ss, sz = self._makeHalfStreamline(x_semilla, y_semilla, xmin - dr, xmax + dr, ymin - dr, ymax + dr, dr, 1)  # forwards
+        rx, ry, rs, rz = self._makeHalfStreamline(x_semilla, y_semilla, xmin - dr, xmax + dr, ymin - dr, ymax + dr, dr, -1)  # backwards
 
         rx.reverse()
         ry.reverse()
+        rs.reverse()
         rz.reverse()
 
-        return rx + [x_semilla] + sx, ry + [y_semilla] + sy, rz + [
-            self._interp_z(x_semilla, y_semilla).item()] + sz, x_semilla, y_semilla
+        return rx + [x_semilla] + sx, ry + [y_semilla] + sy, rs + [0.] + ss, rz + [0.] + sz, x_semilla, y_semilla
 
+    def interpoladoresSZT(self, streamlines):
+
+        nstream = len(streamlines[0][0])
+        xs = []
+        ys = []
+        ss = []
+        ts = []
+        dzs = []
+        # Definimos la coordenada t la cual es unica para cada linea de corriente
+        tscale = np.sqrt((self.meshXmax - self.meshXmin) ** 2 + (self.meshYmax - self.meshYmin) ** 2) / nstream
+
+        for enum, st in enumerate(streamlines):
+            xs.extend(st[0])
+            ys.extend(st[1])
+            ss.extend(st[2])
+            dzs.extend(st[3])
+            ts.extend([enum * tscale] * len(st[0]))
+
+        SG = griddata((xs, ys), ss, (self.XG, self.YG), method='cubic')
+        TG = griddata((xs, ys), ts, (self.XG, self.YG), method='cubic')
+        DZG = griddata((xs, ys), dzs, (self.XG, self.YG), method='cubic')
+
+        self._interp_s = RectBivariateSpline(self.xg, self.yg, SG.T)
+        self._interp_t = RectBivariateSpline(self.xg, self.yg, TG.T)
+        self._interp_dz = RectBivariateSpline(self.xg, self.yg, DZG.T)
