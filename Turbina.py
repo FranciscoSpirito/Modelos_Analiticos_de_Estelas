@@ -51,6 +51,18 @@ class Turbina(object):
             coord_random_arreglo.append(coord_random)
         return coord_random_arreglo
 
+    def u_adentro_disco(self, u_inf, estela):
+        u_adentro_disco = []
+        i = 0
+        for coord in coord_random_adentro_disco:
+            u_inf.coord = coord
+            u_inf.perfil_flujo_base(z_mast, z_0)
+            u = u_inf.u_perfil * (1 - estela.mergeada[i])
+            i += 1
+            u_adentro_disco = np.append(u_adentro_disco, u)
+
+        self.u_disco = u_adentro_disco
+
     def calcular_c_T_Montecarlo(self, estela, coord_random_adentro_disco, z_0, z_mast, u_inf, N):
         # estela: instancia de clase Estela
             # contiene el arreglo de deficits en un vector de
@@ -71,7 +83,7 @@ class Turbina(object):
             for coord in coord_random_adentro_disco:
                 u_inf.coord = coord
                 u_inf.perfil_flujo_base(z_mast, z_0)
-                u = u_inf.coord * (1 - estela.mergeada[i])
+                u = u_inf.u_perfil * (1 - estela.mergeada[i])
                 i += 1
                 u_adentro_disco = np.append(u_adentro_disco, u)
             u_adentro_disco2 = u_adentro_disco ** 2
@@ -108,7 +120,7 @@ class Turbina(object):
             for coord in coord_random_adentro_disco:
                 u_inf.coord = coord
                 u_inf.perfil_flujo_base(z_mast, z_0)
-                u = u_inf.coord * (1 - estela.mergeada[i])
+                u = u_inf.u_perfil * (1 - estela.mergeada[i])
                 i += 1
                 u_adentro_disco = np.append(u_adentro_disco, u)
             u_adentro_disco3 = u_adentro_disco ** 3
@@ -146,7 +158,7 @@ class Turbina(object):
             for coord in coord_random_adentro_disco:
                 u_inf.coord = coord
                 u_inf.perfil_flujo_base(z_mast, z_0)
-                u = u_inf.coord * (1 - estela.mergeada[i])
+                u = u_inf.u_perfil * (1 - estela.mergeada[i])
                 i += 1
                 u_adentro_disco = np.append(u_adentro_disco, u)
             u_adentro_disco3 = u_adentro_disco ** 3
@@ -185,7 +197,7 @@ class Turbina(object):
             for coord in self.lista_coord:
                 u_inf.coord = coord
                 u_inf.perfil_flujo_base(z_mast, z_0)
-                u = u_inf.coord * (1 - estela.mergeada[i])
+                u = u_inf.u_perfil * (1 - estela.mergeada[i])
                 i += 1
                 u_adentro_disco = np.append(u_adentro_disco, u)
             u_adentro_disco2 = u_adentro_disco ** 2
@@ -215,7 +227,7 @@ class Turbina(object):
             for coord in self.lista_coord:
                 u_inf.coord = coord
                 u_inf.perfil_flujo_base(z_mast, z_0)
-                u = u_inf.coord * (1 - estela.mergeada[i])
+                u = u_inf.u_perfil * (1 - estela.mergeada[i])
                 i += 1
                 u_adentro_disco = np.append(u_adentro_disco, u)
             u_adentro_disco3 = u_adentro_disco ** 3
@@ -246,7 +258,7 @@ class Turbina(object):
             for coord in self.lista_coord:
                 u_inf.coord = coord
                 u_inf.perfil_flujo_base(z_mast, z_0)
-                u = u_inf.coord * (1 - estela.mergeada[i])
+                u = u_inf.u_perfil * (1 - estela.mergeada[i])
                 i += 1
                 u_adentro_disco = np.append(u_adentro_disco, u)
             u_adentro_disco3 = u_adentro_disco ** 3
