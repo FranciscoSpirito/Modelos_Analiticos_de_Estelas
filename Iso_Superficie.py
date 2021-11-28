@@ -132,3 +132,15 @@ class Iso_Superficie(object):
         self._interp_s = RectBivariateSpline(self.xg, self.yg, SG.T)
         self._interp_t = RectBivariateSpline(self.xg, self.yg, TG.T)
         self._interp_dz = RectBivariateSpline(self.xg, self.yg, DZG.T)
+
+    def flujo_base_turbinas(self, lista_turbinas):
+
+        for turbina in lista_turbinas:
+            coord_xy = np.vstack(turbina.coord.x, turbina.coord.y)
+
+            u = self._interp_u(*coord_xy).item()
+            v = self._interp_v(*coord_xy).item()
+            w = self._interp_w(*coord_xy).item()
+            turbina.U = [u ,v ,w]
+
+            turbina.t = self._interp_t(np.vstack(*coord_xy), grid=False).item()

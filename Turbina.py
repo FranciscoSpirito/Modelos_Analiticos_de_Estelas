@@ -3,6 +3,19 @@ from __future__ import division
 import numpy as np
 from Coord import Coord
 
+
+""" Clase Turbina, contiene todos los atributos pertenecientes a cada turbina del parque"""
+# d_0 : diametro del rotor
+# coord : coordenada del hub
+# lista_coord  : cordenadas de cada diferencial
+# lista_dAi  : area de cada diferencial
+# U_f_base  : Velocidad del flujo base en coord
+# t  : coordenada correspondiente a la ldc del centro de la estela
+# c_T
+# c_P
+# potencia
+
+
 class Turbina(object):
 
     def __init__(self, d_0, coord):
@@ -10,9 +23,10 @@ class Turbina(object):
         self.coord = coord
         self.lista_coord = None
         self.lista_dAi = None
+        self.U_f_base = None
+        self.t
         self.c_T = None
         self.c_P = None
-        self.estela_de_otras_turbinas = []
         self.potencia = None
 
     def __repr__(self):
@@ -367,7 +381,6 @@ class Turbina(object):
         self.lista_dAi = None
         self.c_T = None
         self.c_P = None
-        self.estela_de_otras_turbinas = []
         self.potencia = None
 
 
