@@ -162,20 +162,40 @@ class Iso_Superficie(object):
 
             ts.extend([enum * tscale] * len(st[0]))
 
-        SG = griddata((xs, ys), ss, (self.XG, self.YG), method='cubic')
-        TG = griddata((xs, ys), ts, (self.XG, self.YG), method='cubic')
-        DZG = griddata((xs, ys), dzs, (self.XG, self.YG), method='cubic')
-        UG = griddata((xs, ys), us, (self.XG, self.YG), method='cubic')
-        VG = griddata((xs, ys), vs, (self.XG, self.YG), method='cubic')
-        WG = griddata((xs, ys), ws, (self.XG, self.YG), method='cubic')
+        # Al rotar la malla ya no es un rectangulo horizontal, por lo que debemos redefinirla
+        npoiX = int((max(xs) - min(xs))/self.paso_grid)
+        npoiY = int((max(ys) - min(ys)) / self.paso_grid)
+        xg = np.linspace(int(min(xs)), int(max(xs)), npoiX)
+        yg = np.linspace(int(min(ys)), int(max(ys)), npoiY)
+        XG, YG = np.meshgrid(xg, yg)
 
-        self._interp_s = RectBivariateSpline(self.xg, self.yg, SG.T)
-        self._interp_t = RectBivariateSpline(self.xg, self.yg, TG.T)
-        self._interp_dz = RectBivariateSpline(self.xg, self.yg, DZG.T)
-        self._interp_u = RectBivariateSpline(self.xg, self.yg, UG.T)
-        self._interp_v = RectBivariateSpline(self.xg, self.yg, VG.T)
-        self._interp_w = RectBivariateSpline(self.xg, self.yg, WG.T)
+        SG = griddata((xs, ys), ss, (XG, YG), method='cubic')
+        TG = griddata((xs, ys), ts, (XG, YG), method='cubic')
+        DZG = griddata((xs, ys), dzs, (XG, YG), method='cubic')
+        UG = griddata((xs, ys), us, (XG, YG), method='cubic')
+        VG = griddata((xs, ys), vs, (XG, YG), method='cubic')
+        WG = griddata((xs, ys), ws, (XG, YG), method='cubic')
 
+        # Remplazamos los valores NaN que estan fuera del rango de valores para interpolar, con el mas cercano de la fila sin no usamos nearest
+        mask = np.isnan(SG)
+        SG[mask] = np.interp(np.flatnonzero(mask), np.flatnonzero(~mask), SG[~mask])
+        mask = np.isnan(TG)
+        TG[mask] = np.interp(np.flatnonzero(mask), np.flatnonzero(~mask), TG[~mask])
+        mask = np.isnan(DZG)
+        DZG[mask] = np.interp(np.flatnonzero(mask), np.flatnonzero(~mask), DZG[~mask])
+        mask = np.isnan(UG)
+        UG[mask] = np.interp(np.flatnonzero(mask), np.flatnonzero(~mask), UG[~mask])
+        mask = np.isnan(VG)
+        VG[mask] = np.interp(np.flatnonzero(mask), np.flatnonzero(~mask), VG[~mask])
+        mask = np.isnan(WG)
+        WG[mask] = np.interp(np.flatnonzero(mask), np.flatnonzero(~mask), WG[~mask])
+
+        self._interp_s = RectBivariateSpline(xg, yg, SG.T)
+        self._interp_t = RectBivariateSpline(xg, yg, TG.T)
+        self._interp_dz = RectBivariateSpline(xg, yg, DZG.T)
+        self._interp_u = RectBivariateSpline(xg, yg, UG.T)
+        self._interp_v = RectBivariateSpline(xg, yg, VG.T)
+        self._interp_w = RectBivariateSpline(xg, yg, WG.T)
 
 
     def flujo_base_turbinas(self, lista_turbinas):
@@ -211,8 +231,8 @@ class Iso_Superficie(object):
 
     # Rota las streamlines de modo que quede x sea la direccion del viento
     def rotar(self, angulo_viento, streamlines):
-        theta = 270 + (90 - angulo_viento)
-        theta_rad = (np.pi/180) * theta
+        theta = -(180 + (90 - angulo_viento))
+        theta_rad = np.radians(theta)
         R = np.matrix([[np.cos(theta_rad), -np.sin(theta_rad)], [np.sin(theta_rad), np.cos(theta_rad)]])
         for streamline in streamlines:
             for i in range(len(streamline[0])):
