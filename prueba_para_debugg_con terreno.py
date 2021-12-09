@@ -23,15 +23,15 @@ u_inf = U_inf()
 u_inf.perfil = 'log'
 
 # Carga las turbinas del parque
-# ruta = r"C:\Users\chesp\Documents\Ingenieria Mecanica\Tesis\Modelos_Analiticos_de_Estelas\Coordenadas_de_turbinas\Coordenadas_turbinas_parque_Rawson.txt"
-# turbinas_list  = cargar_datos('coordenadas_turbinas', ruta)
-turbina_0 = Turbina_Rawson(Coord(np.array([(2500),(2500),260])))
-turbina_1 = Turbina_Rawson(Coord(np.array([(2000),(2000),260])))
-turbina_2 = Turbina_Rawson(Coord(np.array([2300,(2300),260])))
-turbina_3 = Turbina_Rawson(Coord(np.array([(2800),(2800),260])))
-turbina_4 = Turbina_Rawson(Coord(np.array([(3000),(3000),260])))
+ruta = r"C:\Users\chesp\Documents\Ingenieria Mecanica\Tesis\Modelos_Analiticos_de_Estelas\Coordenadas_de_turbinas\Coordenadas_turbinas_parque_Rawson.txt"
+turbinas_list  = cargar_datos('coordenadas_turbinas', ruta)
 
-turbinas_list = [turbina_0, turbina_1, turbina_2, turbina_3, turbina_4]
+# turbina_0 = Turbina_Rawson(Coord(np.array([(2500),(2500),260])))
+# turbina_1 = Turbina_Rawson(Coord(np.array([(2000),(2000),260])))
+# turbina_2 = Turbina_Rawson(Coord(np.array([2300,(2300),260])))
+# turbina_3 = Turbina_Rawson(Coord(np.array([(2800),(2800),260])))
+# turbina_4 = Turbina_Rawson(Coord(np.array([(3000),(3000),260])))
+# turbinas_list = [turbina_0, turbina_1, turbina_2, turbina_3, turbina_4]
 
 fig1 , axes1 = plt.subplots(2,1)
 # Ploteo posicion sin rotar de las turbinas
@@ -43,6 +43,7 @@ for turbina in turbinas_list:
 axes1[0].plot(turbinas_x, turbinas_y, 'o')
 axes1[0].set_title('Posicion de turbinas sin rotar')
 
+turbina_0 = turbinas_list [0]
 z_mast = turbina_0.coord.z
 # z_0 de la superficie
 z_0 = 0.01
@@ -63,9 +64,9 @@ x0, y0 = iso_s.gen_semillas(angulo, nstream)
 dr = 250
 # Calcula las streamlines
 streamlines = [iso_s._makeStreamline(*xy, dr) for xy in zip(x0, y0)]
-# Grafica streamlines sin rotar
-for line in streamlines:
-    axes1[0].plot(line[0], line[1], '.r')
+# # Grafica streamlines sin rotar
+# for line in streamlines:
+#     axes1[0].plot(line[0], line[1], '.r')
 
 
 
@@ -85,9 +86,9 @@ axes2[0].set_title('Posicion de turbinas rotadas')
 
 # Rota streamlines (las referencia al nuevo sistema de coordenadas alineado con el viento)
 streamlines = iso_s.rotar(angulo, streamlines)
-# Grafica streamlines rotadas
-for line in streamlines:
-    axes2[0].plot(line[0], line[1], '.r')
+# # Grafica streamlines rotadas
+# for line in streamlines:
+#     axes2[0].plot(line[0], line[1], '.r')
 
 plt.show()
 
@@ -101,6 +102,7 @@ x_o = 5000
 y_o = 5000
 z_o = 260
 coord = Coord(np.array([x_o, y_o, z_o]))
+coord.rotar(angulo)
 
 # Calcula la velocidad, y en el proceso CT, CP, P de las turbinas
 data_prueba = calcular_u_con_terreno(gaussiana_adaptado_al_terreno, 'linear', coord, parque_de_turbinas, u_inf, iso_s, lista_coord_normalizadas,lista_dAi_normalizados)
@@ -113,6 +115,7 @@ potencia_de_cada_turbina_normalizada = []
 for turbina in turbinas_list:
     if turbina.potencia == None:
         print(turbina.coord)
-    potencia_de_cada_turbina_normalizada.append(float(turbina.potencia)/potencia_mast)
+    potencia_de_cada_turbina_normalizada.append(turbina.potencia/potencia_mast)
 
 print(sum(potencia_de_cada_turbina_normalizada))
+print(potencia_de_cada_turbina_normalizada)

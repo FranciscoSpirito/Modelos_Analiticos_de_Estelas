@@ -1,5 +1,5 @@
 import numpy as np
-from scipy.interpolate import griddata, RectBivariateSpline
+from scipy.interpolate import griddata, RectBivariateSpline, interp2d, bisplrep, LinearNDInterpolator
 
 # Proyecto original: https://github.com/rougier/windmap
 
@@ -162,41 +162,47 @@ class Iso_Superficie(object):
 
             ts.extend([enum * tscale] * len(st[0]))
 
-        # Al rotar la malla ya no es un rectangulo horizontal, por lo que debemos redefinirla
-        npoiX = int((max(xs) - min(xs))/self.paso_grid)
-        npoiY = int((max(ys) - min(ys)) / self.paso_grid)
-        xg = np.linspace(int(min(xs)), int(max(xs)), npoiX)
-        yg = np.linspace(int(min(ys)), int(max(ys)), npoiY)
-        XG, YG = np.meshgrid(xg, yg)
+        # # Al rotar la malla ya no es un rectangulo horizontal, por lo que debemos redefinirla
+        # npoiX = int((max(xs) - min(xs))/self.paso_grid)
+        # npoiY = int((max(ys) - min(ys)) / self.paso_grid)
+        # xg = np.linspace(int(min(xs)), int(max(xs)), npoiX)
+        # yg = np.linspace(int(min(ys)), int(max(ys)), npoiY)
+        # XG, YG = np.meshgrid(xg, yg)
+        #
+        # SG = griddata((xs, ys), ss, (XG, YG), method='cubic')
+        # TG = griddata((xs, ys), ts, (XG, YG), method='cubic')
+        # DZG = griddata((xs, ys), dzs, (XG, YG), method='cubic')
+        # UG = griddata((xs, ys), us, (XG, YG), method='cubic')
+        # VG = griddata((xs, ys), vs, (XG, YG), method='cubic')
+        # WG = griddata((xs, ys), ws, (XG, YG), method='cubic')
+        #
+        # # Remplazamos los valores NaN que estan fuera del rango de valores para interpolar, con el mas cercano de la fila sin no usamos nearest
+        # # mask = np.isnan(SG)
+        # # SG[mask] = np.interp(np.flatnonzero(mask), np.flatnonzero(~mask), SG[~mask])
+        # # mask = np.isnan(TG)
+        # # TG[mask] = np.interp(np.flatnonzero(mask), np.flatnonzero(~mask), TG[~mask])
+        # # mask = np.isnan(DZG)
+        # # DZG[mask] = np.interp(np.flatnonzero(mask), np.flatnonzero(~mask), DZG[~mask])
+        # # mask = np.isnan(UG)
+        # # UG[mask] = np.interp(np.flatnonzero(mask), np.flatnonzero(~mask), UG[~mask])
+        # # mask = np.isnan(VG)
+        # # VG[mask] = np.interp(np.flatnonzero(mask), np.flatnonzero(~mask), VG[~mask])
+        # # mask = np.isnan(WG)
+        # # WG[mask] = np.interp(np.flatnonzero(mask), np.flatnonzero(~mask), WG[~mask])
+        #
+        # self._interp_s = RectBivariateSpline(xg, yg, SG.T)
+        # self._interp_t = RectBivariateSpline(xg, yg, TG.T)
+        # self._interp_dz = RectBivariateSpline(xg, yg, DZG.T)
+        # self._interp_u = RectBivariateSpline(xg, yg, UG.T)
+        # self._interp_v = RectBivariateSpline(xg, yg, VG.T)
+        # self._interp_w = RectBivariateSpline(xg, yg, WG.T)
 
-        SG = griddata((xs, ys), ss, (XG, YG), method='cubic')
-        TG = griddata((xs, ys), ts, (XG, YG), method='cubic')
-        DZG = griddata((xs, ys), dzs, (XG, YG), method='cubic')
-        UG = griddata((xs, ys), us, (XG, YG), method='cubic')
-        VG = griddata((xs, ys), vs, (XG, YG), method='cubic')
-        WG = griddata((xs, ys), ws, (XG, YG), method='cubic')
-
-        # Remplazamos los valores NaN que estan fuera del rango de valores para interpolar, con el mas cercano de la fila sin no usamos nearest
-        mask = np.isnan(SG)
-        SG[mask] = np.interp(np.flatnonzero(mask), np.flatnonzero(~mask), SG[~mask])
-        mask = np.isnan(TG)
-        TG[mask] = np.interp(np.flatnonzero(mask), np.flatnonzero(~mask), TG[~mask])
-        mask = np.isnan(DZG)
-        DZG[mask] = np.interp(np.flatnonzero(mask), np.flatnonzero(~mask), DZG[~mask])
-        mask = np.isnan(UG)
-        UG[mask] = np.interp(np.flatnonzero(mask), np.flatnonzero(~mask), UG[~mask])
-        mask = np.isnan(VG)
-        VG[mask] = np.interp(np.flatnonzero(mask), np.flatnonzero(~mask), VG[~mask])
-        mask = np.isnan(WG)
-        WG[mask] = np.interp(np.flatnonzero(mask), np.flatnonzero(~mask), WG[~mask])
-
-        self._interp_s = RectBivariateSpline(xg, yg, SG.T)
-        self._interp_t = RectBivariateSpline(xg, yg, TG.T)
-        self._interp_dz = RectBivariateSpline(xg, yg, DZG.T)
-        self._interp_u = RectBivariateSpline(xg, yg, UG.T)
-        self._interp_v = RectBivariateSpline(xg, yg, VG.T)
-        self._interp_w = RectBivariateSpline(xg, yg, WG.T)
-
+        self._interp_s = LinearNDInterpolator(list(zip(xs, ys)), ss)
+        self._interp_t = LinearNDInterpolator(list(zip(xs, ys)), ts)
+        self._interp_dz = LinearNDInterpolator(list(zip(xs, ys)), dzs)
+        self._interp_u = LinearNDInterpolator(list(zip(xs, ys)), us)
+        self._interp_v = LinearNDInterpolator(list(zip(xs, ys)), vs)
+        self._interp_w = LinearNDInterpolator(list(zip(xs, ys)), ws)
 
     def flujo_base_turbinas(self, lista_turbinas):
 
@@ -208,7 +214,8 @@ class Iso_Superficie(object):
             w = self._interp_w(*coord_xy).item()
             turbina.U_f_base = np.array([u ,v ,w])
 
-            turbina.t = self._interp_t(*coord_xy, grid=False).item()
+            # turbina.t = self._interp_t(*coord_xy, grid=False).item()   # Este usabamos con RectBivariateSpline
+            turbina.t = self._interp_t(*coord_xy).item()
 
 
     # Define la semilla inicial, debe cubrir todo el terreno, se utiliza solo si no se rotaron las streamlines antes

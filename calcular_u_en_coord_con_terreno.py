@@ -73,7 +73,8 @@ def calcular_u_con_terreno(modelo_deficit, metodo_superposicion, coord, parque_d
 
             # calculo de interseccion con zona influyente de turbina_selec, si existe interseccion samp_l_int sera un valor normalizado entre -1 y 1
             # en caso contrario sera None
-            samp_l_int = interp1d(iso_s._interp_t(*samp_xy, grid=False), samp_l, kind='cubic', bounds_error=False)(turbina_a_la_izquierda.t)
+            valores_x = [ iso_s._interp_t(samp_xy[0, i], samp_xy[1 , i]).item() for i in range(len(samp_xy[0]))]
+            samp_l_int = interp1d(valores_x, samp_l, kind='cubic', bounds_error=False)(turbina_a_la_izquierda.t)
 
             # calculo del deficit en las coord de la turbina_selec
             for coordenada in turbina_selec.lista_coord:
@@ -95,7 +96,8 @@ def calcular_u_con_terreno(modelo_deficit, metodo_superposicion, coord, parque_d
         # calcula el deficit generado por la turbina seleccionada (ya tiene el c_T como para hacer esto) sobre la coordenada coord
         # calculo de interseccion con zona influyente de coord, si existe interseccion samp_l_int_coord sera un valor normalizado entre -1 y 1
         # en caso contrario sera None
-        samp_l_int_coord = interp1d(iso_s._interp_t(*samp_xy_coord, grid=False), samp_l, kind='cubic',
+        valores_x_coord = [iso_s._interp_t(samp_xy_coord[0, i], samp_xy_coord[1, i]).item() for i in range(len(samp_xy_coord[0]))]
+        samp_l_int_coord = interp1d(valores_x_coord, samp_l, kind='cubic',
                                     bounds_error=False)(turbina_selec.t)
         deficit_normalizado_en_coord_contribucion_turbina_selec = modelo_deficit.evaluar_deficit_normalizado(
             turbina_selec, coord, iso_s, samp_l_int_coord, rmax, v_coord, u_coord, muv_coord, (coord.x, coord.y))
