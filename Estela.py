@@ -2,7 +2,6 @@ from __future__ import division
 import numpy as np
 # coding=utf-8
 
-# la estela sobre un disco
 class Estela(object):
     def __init__(self, arreglo, cantidad_coords_adentro_disco, cantidad_turbinas_izquierda):
         self.arreglo = arreglo
@@ -11,7 +10,7 @@ class Estela(object):
         self.mergeada = None
 
     """
-    Utiliza los tres metodos de superposicion de estelas que utiliza el paper
+    Utiliza metodos de superposicion de estelas que utiliza el paper
     'Limitations to the validity of single wake superposition in wind
     farm yield assessment'
     """
