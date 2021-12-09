@@ -27,7 +27,8 @@ class Parque_de_turbinas(object):
         return turbinas_a_la_izquierda
 
     # recibe un angulo en grados y rota las coordenadas x e y en ese angulo
-    def rotar(self, theta):
+    def rotar(self, angulo_viento):
+        theta = 270 + (90 - angulo_viento)
         theta_rad = (np.pi/180) * theta
         R = np.matrix([[np.cos(theta_rad), -np.sin(theta_rad)], [np.sin(theta_rad), np.cos(theta_rad)]])
         for turbina in self.turbinas:

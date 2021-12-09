@@ -16,42 +16,47 @@ from Iso_Superficie import Iso_Superficie
 # coord: instancia de Coord, es el punto del espacio en el que se busca calcular el viento u
 # parque_de_turbinas: instancia de Parque_de_turbinas, incluye toda la informacion relevante al
 # parque que perturba el flujo
-# iso_s: intancia de iso_s, contiene la informacion sobre el viento de entrada (isosuperficie)
+# iso_s: intancia de Iso_superficie, contiene la informacion sobre el flujo base
 # lista_coord_normalizadas: coordenadas de un disco de radio 1 ubicado en el (0,0,0)
 # lista_dAi_normalizadas: areas de los diferenciales de un disco de radio 1 ubicado en el (0,0,0)
+# u_inf: instancia de U_inf, contiene la informacion del perfil de velocidades (log o cte)
 # u: viento en la coordenada coord al atravezar el parque con las condiciones de entrada definidas
 
 
-def calcular_u_en_coord_integral_deterministica(modelo_deficit, metodo_superposicion, coord, parque_de_turbinas, iso_s,
+def calcular_u_con_terreno(modelo_deficit, metodo_superposicion, coord, parque_de_turbinas, u_inf, iso_s,
                                                 lista_coord_normalizadas, lista_dAi_normalizados):
+
     parque_de_turbinas.ordenar_turbinas_de_izquierda_a_derecha()
     turbinas_a_la_izquierda_de_coord = parque_de_turbinas.turbinas_a_la_izquierda_de_una_coord(coord)
     # lista que guardara los deficits normalizados generados por todas las turbinas a la izquierda de coord
     deficit_normalizado_en_coord = []
-    # Radio maximo de interseccion con las ldc (turbinas con estelas fuera de este no se toman en cuenta su influencia)
+    # Radio maximo de la "zona influyente" de interseccion con las ldc de las turbinas aguas abajo
+    # (turbinas con estelas fuera de esta zona, no se tomara en cuenta su influencia)
     rmax = 500
-    # Puntos dentro del radio maximo (normalizados)
+    # Puntos dentro de la zona influyente (normalizados)
     nsamp = 21
     samp_l = np.linspace(-1, 1, nsamp)
 
+    #  Calculo de puntos de la zona influyente cerca de la coord (samp_xy_coord)
+    u_coord, v_coord, w_coord = iso_s._interp_u(coord.x, coord.y).item(), iso_s._interp_v(coord.x, coord.y).item(), iso_s._interp_w(coord.x, coord.y).item()
+    u_f_base = np.array([u_coord, v_coord, w_coord])
+    muv_coord = np.sqrt(u_coord ** 2 + v_coord ** 2)
+    samp_xy_coord = (np.vstack((samp_l * rmax * -v_coord / muv_coord, samp_l * rmax * u_coord / muv_coord)).T + (coord.x, coord.y)).T
+
+    # Loop para calculo de deficits en la coordenada generado por las turbinas aguas abajo
     for turbina_selec in turbinas_a_la_izquierda_de_coord:
 
         turbina_selec.desnormalizar_coord_y_areas(lista_coord_normalizadas, lista_dAi_normalizados)
-        turbinas_a_la_izquierda_de_turbina_selec = parque_de_turbinas.turbinas_a_la_izquierda_de_una_coord(
-            turbina_selec.coord)
+        turbinas_a_la_izquierda_de_turbina_selec = parque_de_turbinas.turbinas_a_la_izquierda_de_una_coord(turbina_selec.coord)
         cantidad_turbinas_izquierda_de_selec = len(turbinas_a_la_izquierda_de_turbina_selec)
 
-        # Velocidades del flujo base en el hub
-        coord_xy = np.vstack(turbina_selec.coord.x, turbina_selec.coord.y)
-        u0, v0 = turbina_selec.U[0], turbina_selec.U[1]
+        #  Calculo de zona influyente de la turbina seleccionada samp_xy
+        coord_xy = (turbina_selec.coord.x, turbina_selec.coord.y)
+        u0, v0 = turbina_selec.U_f_base[0], turbina_selec.U_f_base[1]
         muv = np.sqrt(u0 ** 2 + v0 ** 2)
+        samp_xy = (np.vstack((samp_l * rmax * -v0 / muv, samp_l * rmax * u0 / muv)).T + coord_xy).T
 
-        # Se desnormalizan las muestras samp_l dejandolas pertenecientes al plano perp. a la vel. del flujo en el hub.
-        samp_xy = (np.vstack((samp_l * rmax * -v0 / muv,
-                              samp_l * rmax * u0 / muv)).T + coord_xy).T
-
-        # lista que guardara los deficits generados sobre las coordenadas random dentro del disco
-        # de turbina selec para calcular el montecarlo
+        # lista que guardara los deficits generados sobre las coordenadas dentro del disco de turbina_selec
         arreglo_deficit = []
 
         # separa el caso en el que la turbina es la 'mas a la izquierda', es decir, es la turbina que recibe
@@ -60,37 +65,40 @@ def calcular_u_en_coord_integral_deterministica(modelo_deficit, metodo_superposi
             turbina_virtual = Turbina(turbina_selec.d_0, Coord(
                 np.array([turbina_selec.coord.x, turbina_selec.coord.y, turbina_selec.coord.z])))
             turbina_virtual.c_T = 0
+            turbina_virtual.t = turbina_selec.t
             turbinas_a_la_izquierda_de_turbina_selec = [turbina_virtual]
 
+        # Loop para calculo de deficits en la turbina_selec generado por las turbinas aguas abajo
         for turbina_a_la_izquierda in turbinas_a_la_izquierda_de_turbina_selec:
 
-            # Verificamos que este dentro del rmax
+            # calculo de interseccion con zona influyente de turbina_selec, si existe interseccion samp_l_int sera un valor normalizado entre -1 y 1
+            # en caso contrario sera None
             samp_l_int = interp1d(iso_s._interp_t(*samp_xy, grid=False), samp_l, kind='cubic', bounds_error=False)(turbina_a_la_izquierda.t)
 
-            if samp_l_int != None:
-                interseccion = (np.vstack((samp_l * rmax * -v0 / muv,
-                                      samp_l * rmax * u0 / muv)).T + coord_xy).T
-                # calculo del deficit en las coord de coord_turbina_selec
-                for coordenada in turbina_selec.lista_coord:
-                    deficit_normalizado_en_coordenada = modelo_deficit.evaluar_deficit_normalizado(
-                        turbina_a_la_izquierda, coordenada, iso_s, interseccion)
-                    arreglo_deficit.append(deficit_normalizado_en_coordenada)
+            # calculo del deficit en las coord de la turbina_selec
+            for coordenada in turbina_selec.lista_coord:
+                deficit_normalizado_en_coordenada = modelo_deficit.evaluar_deficit_normalizado(
+                    turbina_a_la_izquierda, coordenada, iso_s, samp_l_int, rmax, v0, u0, muv, coord_xy)
+                arreglo_deficit.append(deficit_normalizado_en_coordenada)
 
-            cantidad_coords = len(turbina_selec.lista_coord)
 
         # crea una instancia de Estela con los datos calculados sobre las coordenadas aleatorias
-        estela_sobre_turbina_selec = Estela(arreglo_deficit, cantidad_coords, cantidad_turbinas_izquierda_de_selec)
+        estela_sobre_turbina_selec = Estela(arreglo_deficit, len(turbina_selec.lista_coord), cantidad_turbinas_izquierda_de_selec)
         estela_sobre_turbina_selec.merge(metodo_superposicion)
 
         # Se calculan C_T C_P y Potencia de cada turbina
-        turbina_selec.calcular_c_T_Int_Det(estela_sobre_turbina_selec, parque_de_turbinas.z_0, parque_de_turbinas.z_mast)
-        turbina_selec.calcular_c_P_Int_Det(estela_sobre_turbina_selec, parque_de_turbinas.z_0, parque_de_turbinas.z_mast)
-        turbina_selec.calcular_P_Int_Det(estela_sobre_turbina_selec, parque_de_turbinas.z_0, parque_de_turbinas.z_mast)
+        turbina_selec.u_adentro_disco_con_terreno(u_inf, estela_sobre_turbina_selec, parque_de_turbinas.z_mast, parque_de_turbinas.z_0)
+        turbina_selec.calcular_c_T_Int_Det()
+        turbina_selec.calcular_c_P_Int_Det()
+        turbina_selec.calcular_P_Int_Det()
 
-        # calcula el deficit generado por la turbina seleccionada (ya tiene el c_T como para hacer esto)
-        # sobre la coordenada coord
+        # calcula el deficit generado por la turbina seleccionada (ya tiene el c_T como para hacer esto) sobre la coordenada coord
+        # calculo de interseccion con zona influyente de coord, si existe interseccion samp_l_int_coord sera un valor normalizado entre -1 y 1
+        # en caso contrario sera None
+        samp_l_int_coord = interp1d(iso_s._interp_t(*samp_xy_coord, grid=False), samp_l, kind='cubic',
+                                    bounds_error=False)(turbina_selec.t)
         deficit_normalizado_en_coord_contribucion_turbina_selec = modelo_deficit.evaluar_deficit_normalizado(
-            turbina_selec, coord)
+            turbina_selec, coord, iso_s, samp_l_int_coord, rmax, v_coord, u_coord, muv_coord, (coord.x, coord.y))
         deficit_normalizado_en_coord.append(deficit_normalizado_en_coord_contribucion_turbina_selec)
 
     # crea una instancia de Estela con los datos calculados sobre coord generados por las coordenadas a
@@ -98,8 +106,9 @@ def calcular_u_en_coord_integral_deterministica(modelo_deficit, metodo_superposi
     estela_sobre_coord = Estela(deficit_normalizado_en_coord, 1, len(turbinas_a_la_izquierda_de_coord))
     estela_sobre_coord.merge(metodo_superposicion)
 
-    # define el parametro coord de la instancia u_inf como la coord
+    # Calculo de velocidad en coord
     u_inf.coord = coord
+    u_inf.u_mast = np.linalg.norm(u_f_base)
     u_inf.perfil_flujo_base(parque_de_turbinas.z_mast, parque_de_turbinas.z_0)
-    u = u_inf.coord * (1 - estela_sobre_coord.mergeada[0])
+    u = u_inf.u_perfil * (1 - estela_sobre_coord.mergeada[0])
     return u

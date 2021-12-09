@@ -24,7 +24,7 @@ class Turbina(object):
         self.lista_coord = None
         self.lista_dAi = None
         self.U_f_base = None
-        self.t
+        self.t = None
         self.c_T = None
         self.c_P = None
         self.potencia = None
@@ -51,17 +51,6 @@ class Turbina(object):
             coord_random_arreglo.append(coord_random)
         return coord_random_arreglo
 
-    def u_adentro_disco(self, u_inf, estela):
-        u_adentro_disco = []
-        i = 0
-        for coord in coord_random_adentro_disco:
-            u_inf.coord = coord
-            u_inf.perfil_flujo_base(z_mast, z_0)
-            u = u_inf.u_perfil * (1 - estela.mergeada[i])
-            i += 1
-            u_adentro_disco = np.append(u_adentro_disco, u)
-
-        self.u_disco = u_adentro_disco
 
     def calcular_c_T_Montecarlo(self, estela, coord_random_adentro_disco, z_0, z_mast, u_inf, N):
         # estela: instancia de clase Estela
@@ -181,29 +170,48 @@ class Turbina(object):
             self.potencia = (10**-3) * self.c_P * 0.5 * rho * (u_medio_disco)**3 * ((self.d_0)*0.5)**2 * np.pi
 
 
+    # Calcula la velocidad en cada cord de la lista de coord de cada turbina
+    def u_adentro_disco_integral_deterministica(self, u_inf, estela, z_mast, z_0):
+        # estela: instancia de clase Estela contiene el arreglo de deficits en un vector de
+        # z_0: float rugocidad del suelo
+        # u_inf: instancia de la clase U_inf usara el metodo calcular_logaritmico
 
-    def calcular_c_T_Int_Det(self, estela, z_0, z_mast, u_inf):
-        # estela: instancia de clase Estela
-        # contiene el arreglo de deficits en un vector de
-        # z_0: float
-        # rugocidad del suelo
-        # u_inf: instancia de la clase U_inf
-        # usara el metodo calcular_logaritmico
+        u_adentro_disco = []
+        i = 0
+        for coord in self.lista_coord:
+            u_inf.coord = coord
+            u_inf.perfil_flujo_base(z_mast, z_0)
+            u = u_inf.u_perfil * (1 - estela.mergeada[i])
+            i += 1
+            u_adentro_disco = np.append(u_adentro_disco, u)
+
+        self.u_disco = u_adentro_disco
+
+    def u_adentro_disco_con_terreno(self, u_inf, estela, z_mast, z_0):
+        # estela: instancia de clase Estela contiene el arreglo de deficits en un vector de
+        # z_0: float rugocidad del suelo
+        # u_inf: instancia de la clase U_inf usara el metodo calcular_logaritmico
+
+        u_adentro_disco = []
+        i = 0
+        u_inf.u_mast = np.linalg.norm(self.U_f_base)
+        for coord in self.lista_coord:
+            u_inf.coord = coord
+            u_inf.perfil_flujo_base(z_mast, z_0)
+            u = u_inf.u_perfil * (1 - estela.mergeada[i])
+            i += 1
+            u_adentro_disco = np.append(u_adentro_disco, u)
+
+        self.u_disco = u_adentro_disco
+
+    def calcular_c_T_Int_Det(self):
 
         if self.c_T is None:
 
-            u_adentro_disco = []
-            i = 0
-            for coord in self.lista_coord:
-                u_inf.coord = coord
-                u_inf.perfil_flujo_base(z_mast, z_0)
-                u = u_inf.u_perfil * (1 - estela.mergeada[i])
-                i += 1
-                u_adentro_disco = np.append(u_adentro_disco, u)
-            u_adentro_disco2 = u_adentro_disco ** 2
+            u_adentro_disco2 = self.u_disco ** 2
             lista_para_sumatoria = u_adentro_disco2 * self.lista_dAi
             integral_u2 = sum(lista_para_sumatoria)
-            u_medio_disco = np.mean(u_adentro_disco)
+            u_medio_disco = np.mean(self.u_disco)
             c_T_tab = self.c_T_tabulado(u_medio_disco)
             T_turbina = c_T_tab * integral_u2  # lo dividi por (0.5 * rho) porque luego dividire por eso
             T_disponible = (u_medio_disco) ** 2 * (np.pi * (self.d_0 / 2) ** 2)  # lo dividi por (0.5 * rho) porque luego multiplicare por eso
@@ -213,27 +221,14 @@ class Turbina(object):
                 self.c_T = T_turbina / T_disponible
 
 
-    def calcular_c_P_Int_Det(self, estela, z_0, z_mast, u_inf):
-
-        # estela: instancia de clase Estela
-        # contiene el arreglo de deficits en un vector de
-        # z_0: float, rugocidad del suelo
-        # u_inf: instancia de la clase U_inf, usara el metodo calcular_logaritmico
+    def calcular_c_P_Int_Det(self):
 
         if self.c_P is None:
 
-            u_adentro_disco = []
-            i = 0
-            for coord in self.lista_coord:
-                u_inf.coord = coord
-                u_inf.perfil_flujo_base(z_mast, z_0)
-                u = u_inf.u_perfil * (1 - estela.mergeada[i])
-                i += 1
-                u_adentro_disco = np.append(u_adentro_disco, u)
-            u_adentro_disco3 = u_adentro_disco ** 3
+            u_adentro_disco3 = self.u_disco ** 3
             lista_para_sumatoria = u_adentro_disco3 * self.lista_dAi
             integral_u3 = sum(lista_para_sumatoria)
-            u_medio_disco = np.mean(u_adentro_disco)
+            u_medio_disco = np.mean(self.u_disco)
             c_P_tab = self.c_P_tabulado(u_medio_disco)
             rho = 1.225  # densidad del aire
             self.potencia = c_P_tab * integral_u3 * 0.5 * rho   # lo dividi por (0.5 * rho) porque luego dividire por eso
@@ -244,27 +239,14 @@ class Turbina(object):
                 self.c_P = self.potencia / (0.5 * rho * P_disponible)
 
 
-    def calcular_P_Int_Det(self, estela, z_0, z_mast, u_inf):
-
-        # estela: instancia de clase Estela
-        # contiene el arreglo de deficits en un vector de
-        # z_0: float, rugocidad del suelo
-        # u_inf: instancia de la clase U_inf, usara el metodo calcular_logaritmico
+    def calcular_P_Int_Det(self):
 
         if self.potencia is None:
 
-            u_adentro_disco = []
-            i = 0
-            for coord in self.lista_coord:
-                u_inf.coord = coord
-                u_inf.perfil_flujo_base(z_mast, z_0)
-                u = u_inf.u_perfil * (1 - estela.mergeada[i])
-                i += 1
-                u_adentro_disco = np.append(u_adentro_disco, u)
-            u_adentro_disco3 = u_adentro_disco ** 3
+            u_adentro_disco3 = self.u_disco ** 3
             lista_para_sumatoria = u_adentro_disco3 * self.lista_dAi
             integral_u3 = sum(lista_para_sumatoria)
-            u_medio_disco = np.mean(u_adentro_disco)
+            u_medio_disco = np.mean(self.u_disco)
             c_P_tab = self.c_P_tabulado(u_medio_disco)
             rho = 1.225  # densidad del aire
             self.potencia = c_P_tab * integral_u3 * 0.5 * rho   # lo dividi por (0.5 * rho) porque luego dividire por eso
@@ -281,7 +263,8 @@ class Turbina(object):
         #  n: numero de puntos
         #  factor_de_tolerancia_porcentual es la maxima diferencia que puede haber entre los arcos y el espesor
         #  expresado como porsentaje del espesor.
-        #  El metodo itera desde una tolerancia del 100% hasta 1% o corta cuando queda un unico espesor que cumple con esta tolerancia
+        #  El metodo itera desde una tolerancia del 100% hasta 1% o corta cuando queda un unico espesor que
+        #  cumple con esta tolerancia
 
         if n == 1:
             return 1
