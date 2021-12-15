@@ -73,7 +73,6 @@ class Iso_Superficie(object):
 
             x += scale * u
             y += scale * v
-            # Here we may compute the actual s in 3D and also integrate the \Delta z
             dz += scale2 * w
             s += np.sqrt(dr ** 2 + (scale2 * w) ** 2)
 
@@ -97,43 +96,43 @@ class Iso_Superficie(object):
         ymin, ymax = self.meshYmin - self.paso_grid, self.meshYmax + self.paso_grid
 
         sx, sy, sz, ss, su, sv, sw = self._makeHalfStreamline(x0, y0, xmin, xmax, ymin, ymax, dr, 1)  # forwards
-        rx, ry, rz, rs, ru, rv, rw = self._makeHalfStreamline(x0, y0, xmin, xmax, ymin, ymax, dr, -1)  # backwards
+        # rx, ry, rz, rs, ru, rv, rw = self._makeHalfStreamline(x0, y0, xmin, xmax, ymin, ymax, dr, -1)  # backwards
+        #
+        # rx.reverse()
+        # ry.reverse()
+        # rz.reverse()
+        # rs.reverse()
+        # ru.reverse()
+        # rv.reverse()
+        # rw.reverse()
+        # # Busqueda de Semilla para corregir desplazamiento en z, buscamos comenzar desde el w_min, lo que indicaria el punto mas cercano a la isosuperficie
+        # ssx = rx + [x0] + sx
+        # ssy = ry + [y0] + sy
+        #
+        # w_i = []
+        # for x, y in zip(ssx, ssy):
+        #     w_i.append(self._interp_w(x, y).item())
+        # x_semilla = ssx[w_i.index(min(w_i))]
+        # y_semilla = ssy[w_i.index(min(w_i))]
+        #
+        # # Recalculamos streamlines desde las nuevas semillas
+        # sx, sy, sz, ss, su, sv, sw = self._makeHalfStreamline(x_semilla, y_semilla, xmin - dr, xmax + dr, ymin - dr, ymax + dr, dr, 1)  # forwards
+        # rx, ry, rz, rs, ru, rv, rw = self._makeHalfStreamline(x_semilla, y_semilla, xmin - dr, xmax + dr, ymin - dr, ymax + dr, dr, -1)  # backwards
+        #
+        # rx.reverse()
+        # ry.reverse()
+        # rz.reverse()
+        # rs.reverse()
+        # ru.reverse()
+        # rv.reverse()
+        # rw.reverse()
+        #
+        u_semilla = self._interp_u(x0, y0).item()
+        v_semilla = self._interp_v(x0, y0).item()
+        w_semilla = self._interp_w(x0, y0).item()
 
-        rx.reverse()
-        ry.reverse()
-        rz.reverse()
-        rs.reverse()
-        ru.reverse()
-        rv.reverse()
-        rw.reverse()
-
-        # Busqueda de Semilla para corregir desplazamiento en z, buscamos comenzar desde el w_min, lo que indicaria el punto mas cercano a la isosuperficie
-        ssx = rx + [x0] + sx
-        ssy = ry + [y0] + sy
-
-        w_i = []
-        for x, y in zip(ssx, ssy):
-            w_i.append(self._interp_w(x, y).item())
-        x_semilla = ssx[w_i.index(min(w_i))]
-        y_semilla = ssy[w_i.index(min(w_i))]
-
-        # Recalculamos streamlines desde las nuevas semillas
-        sx, sy, sz, ss, su, sv, sw = self._makeHalfStreamline(x_semilla, y_semilla, xmin - dr, xmax + dr, ymin - dr, ymax + dr, dr, 1)  # forwards
-        rx, ry, rz, rs, ru, rv, rw = self._makeHalfStreamline(x_semilla, y_semilla, xmin - dr, xmax + dr, ymin - dr, ymax + dr, dr, -1)  # backwards
-
-        rx.reverse()
-        ry.reverse()
-        rz.reverse()
-        rs.reverse()
-        ru.reverse()
-        rv.reverse()
-        rw.reverse()
-
-        u_semilla = self._interp_u(x_semilla, y_semilla).item()
-        v_semilla = self._interp_v(x_semilla, y_semilla).item()
-        w_semilla = self._interp_w(x_semilla, y_semilla).item()
-
-        return rx + [x_semilla] + sx, ry + [y_semilla] + sy, rz + [0.] + sz, rs + [0.] + ss, ru + [u_semilla] + su, rv + [v_semilla] + sv, rw + [w_semilla] + sw
+        # return rx + [x0] + sx, ry + [x0] + sy, rz + [0.] + sz, rs + [0.] + ss, ru + [u_semilla] + su, rv + [v_semilla] + sv, rw + [w_semilla] + sw
+        return sx, sy, sz, ss, su, sv, sw
 
     # Redefine interpoladores, luego de rotar las streamlines
     def redef_interpoladores(self, streamlines):
@@ -218,21 +217,103 @@ class Iso_Superficie(object):
             turbina.t = self._interp_t(*coord_xy).item()
 
 
-    # Define la semilla inicial, debe cubrir todo el terreno, se utiliza solo si no se rotaron las streamlines antes
+    # Define la semilla inicial, debe cubrir todo el terreno
     def gen_semillas(self, angulo, nstream):
 
-        if angulo in [0, 180]:
+        b = self.meshXmax - self.meshXmin
+        h = self.meshYmax - self.meshYmin
+        dr = b * np.cos(np.arctan(h/b))
+
+        if angulo == 0:
             x_semilla = np.linspace(self.meshXmin, self.meshXmax, nstream)
-            y_semilla = np.full(np.shape(x_semilla), (self.meshYmin + self.meshYmax)/2)
-        elif angulo in [22.5, 45, 67.5, 202, 5, 225, 247.5]:
-            x_semilla = np.linspace(self.meshXmin, self.meshXmax, nstream)
-            y_semilla = np.linspace(self.meshYmax, self.meshYmin, nstream)
-        elif angulo in [112.5, 135, 157.5, 292.5, 315, 337.5]:
-            x_semilla = np.linspace(self.meshXmin, self.meshXmax, nstream)
+            y_semilla = np.full(np.shape(x_semilla), self.meshYmax)
+        elif angulo == 90:
             y_semilla = np.linspace(self.meshYmin, self.meshYmax, nstream)
+            x_semilla = np.full(np.shape(y_semilla), self.meshXmax)
+        elif angulo == 180:
+            x_semilla = np.linspace(self.meshXmin, self.meshXmax, nstream)
+            y_semilla = np.full(np.shape(x_semilla), self.meshYmin)
+        elif angulo == 270:
+            y_semilla = np.linspace(self.meshYmin, self.meshYmax, nstream)
+            x_semilla = np.full(np.shape(y_semilla), self.meshXmin)
+        elif angulo in [202.5, 225, 247.5]:
+            nstream_x = int(abs(b / (dr / np.sin(angulo))))
+            nstream_y = int(abs(h / (dr / np.sin(90-angulo))))
+            y_semilla = np.linspace(self.meshYmin, self.meshYmax, nstream_y)
+            x_semilla = np.full(np.shape(y_semilla), self.meshXmin)
+            x_semilla1 = np.linspace(self.meshXmin, self.meshXmax, nstream_x)
+            y_semilla1 = np.full(np.shape(x_semilla1), self.meshYmax)
+            x_semilla = np.append(x_semilla, x_semilla1)
+            y_semilla = np.append(y_semilla, y_semilla1)
+        elif angulo in [22.5, 45, 67.5]:
+            nstream_x = int(abs(b / (dr / np.sin(angulo))))
+            nstream_y = int(abs(h / (dr / np.sin(90-angulo))))
+            x_semilla = np.linspace(self.meshXmin, self.meshXmax, nstream_x)
+            y_semilla = np.full(np.shape(x_semilla), self.meshYmax)
+            y_semilla1 = np.linspace(self.meshYmax, self.meshYmin, nstream_y)
+            x_semilla1 = np.full(np.shape(y_semilla1), self.meshXmax)
+            x_semilla = np.append(x_semilla, x_semilla1)
+            y_semilla = np.append(y_semilla, y_semilla1)
+        elif angulo in [112.5, 135, 157.5]:
+            nstream_x = int(abs(b / (dr / np.sin(angulo))))
+            nstream_y = int(abs(h / (dr / np.sin(90-angulo))))
+            y_semilla = np.linspace(self.meshYmax, self.meshYmin, nstream_y)
+            x_semilla = np.full(np.shape(y_semilla), self.meshXmax)
+            x_semilla1 = np.linspace(self.meshXmax, self.meshXmin, nstream_x)
+            y_semilla1 = np.full(np.shape(x_semilla1), self.meshYmin)
+            x_semilla = np.append(x_semilla, x_semilla1)
+            y_semilla = np.append(y_semilla, y_semilla1)
+        else:
+            nstream_x = int(abs(b / (dr / np.sin(angulo))))
+            nstream_y = int(abs(h / (dr / np.sin(90-angulo))))
+            x_semilla = np.linspace(self.meshXmax, self.meshXmin, nstream_x)
+            y_semilla = np.full(np.shape(x_semilla), self.meshYmin)
+            y_semilla1 = np.linspace(self.meshYmin, self.meshYmax, nstream_y)
+            x_semilla1= np.full(np.shape(y_semilla1), self.meshXmin)
+            x_semilla = np.append(x_semilla, x_semilla1)
+            y_semilla = np.append(y_semilla, y_semilla1)
+
+        if angulo == 0:
+            x_semilla = np.linspace(self.meshXmin, self.meshXmax, nstream)
+            y_semilla = np.full(np.shape(x_semilla), self.meshYmax)
+        elif angulo in [22.5, 45, 67.5]:
+            x_semilla = np.linspace(self.meshXmin, self.meshXmax, nstream)
+            y_semilla = np.full(np.shape(x_semilla), self.meshYmax)
+            y_semilla1 = np.linspace(self.meshYmax, self.meshYmin, nstream)
+            x_semilla1 = np.full(np.shape(y_semilla1), self.meshXmax)
+            x_semilla = np.append(x_semilla,x_semilla1)
+            y_semilla = np.append(y_semilla, y_semilla1)
+        elif angulo == 90:
+            y_semilla = np.linspace(self.meshYmin, self.meshYmax, nstream)
+            x_semilla = np.full(np.shape(y_semilla), self.meshXmax)
+        elif angulo in [112.5, 135, 157.5]:
+            y_semilla = np.linspace(self.meshYmax, self.meshYmin, nstream)
+            x_semilla = np.full(np.shape(y_semilla), self.meshXmax)
+            x_semilla1 = np.linspace(self.meshXmax, self.meshXmin, nstream)
+            y_semilla1 = np.full(np.shape(x_semilla1), self.meshYmin)
+            x_semilla = np.append(x_semilla, x_semilla1)
+            y_semilla = np.append(y_semilla, y_semilla1)
+        elif angulo == 180:
+            x_semilla = np.linspace(self.meshXmin, self.meshXmax, nstream)
+            y_semilla = np.full(np.shape(x_semilla), self.meshYmin)
+        elif angulo in [202.5, 225, 247.5]:
+            x_semilla = np.linspace(self.meshXmax, self.meshXmin, nstream)
+            y_semilla = np.full(np.shape(x_semilla), self.meshYmin)
+            y_semilla1 = np.linspace(self.meshYmin, self.meshYmax, nstream)
+            x_semilla1 = np.full(np.shape(y_semilla1), self.meshXmin)
+            x_semilla = np.append(x_semilla, x_semilla1)
+            y_semilla = np.append(y_semilla, y_semilla1)
+        elif angulo == 270:
+            y_semilla = np.linspace(self.meshYmin, self.meshYmax, nstream)
+            x_semilla = np.full(np.shape(y_semilla), self.meshXmin)
         else:
             y_semilla = np.linspace(self.meshYmin, self.meshYmax, nstream)
-            x_semilla = np.full(np.shape(y_semilla), (self.meshXmin + self.meshXmax)/2)
+            x_semilla = np.full(np.shape(y_semilla), self.meshXmin)
+            x_semilla1 = np.linspace(self.meshXmin, self.meshXmax, nstream)
+            y_semilla1 = np.full(np.shape(x_semilla1), self.meshYmax)
+            x_semilla = np.append(x_semilla, x_semilla1)
+            y_semilla = np.append(y_semilla, y_semilla1)
+
 
         return x_semilla, y_semilla
 
