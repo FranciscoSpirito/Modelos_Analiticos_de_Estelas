@@ -99,47 +99,26 @@ class Iso_Superficie(object):
         Compute a streamline extending in both directions from the given point.
         """
         streamlines = []
+        # Determinacion de s inicial de cada streamline
         for x0, y0 in zip(x_semillas, y_semillas):
-
             if angulo in [0, 90, 180, 270]:
                 s0 = 0.
-            elif angulo in [22.5, 45, 67.5]:
-                if len(streamlines) > 0 and x0 <= x_prev and y0 <= y_prev:
-                    s0 = streamline[3][0]
-                else:
-                    s0 = 0.
-            elif angulo in [112.5, 135, 157.5]:
-                if len(streamlines) > 0 and x0 <= x_prev and y0 >= y_prev:
-                    s0 = streamline[3][1]
-                else:
-                    s0 = 0.
-            elif angulo in [112.5, 135, 157.5]:
-                if len(streamlines) > 0 and x0 <= x_prev and y0 >= y_prev:
-                    s0 = streamline[3][1]
-                else:
-                    s0 = 0.
-            elif angulo in [202.5, 225, 247.5]:
-                if len(streamlines) > 0 and x0 >= x_prev and y0 >= y_prev:
-                    s0 = streamline[3][1]
-                else:
-                    s0 = 0.
+                t0 = abs((x_semillas[0] - x0) + (y_semillas[0] - y0))
             else:
-                if len(streamlines) > 0 and x0 >= x_prev and y0 <= y_prev:
-                    s0 = streamline[3][1]
+                if y0 == y_semillas[0]:
+                    s0 = (x_semillas[0]-x0) * np.cos(np.radians(90-angulo))
+                    t0 = s0 * np.tan(np.radians(90-angulo))
                 else:
-                    s0 = 0.
+                    s0 = (y_semillas[0] - y0) * np.cos(np.radians(angulo))
+                    t0 = - s0 * np.tan(np.radians(angulo))
 
-
-            xmin, xmax = self.meshXmin - self.paso_grid, self.meshXmax + self.paso_grid
-            ymin, ymax = self.meshYmin - self.paso_grid, self.meshYmax + self.paso_grid
+            xmin, xmax = self.meshXmin - 2*self.paso_grid, 2*self.meshXmax + 2*self.paso_grid
+            ymin, ymax = self.meshYmin - 2*self.paso_grid, 2*self.meshYmax + 2*self.paso_grid
 
             sx, sy, sdz, ss = self._makeHalfStreamline(x0, y0, xmin, xmax, ymin, ymax, dr, s0, 1)  # forwards
-
-            streamline = [sx, sy, ss, sdz]
+            st = [t0] * len(sx)
+            streamline = [sx, sy, ss, sdz, st]
             streamlines.append(streamline)
-
-            x_prev = x0
-            y_prev = y0
 
         return streamlines
 
@@ -153,20 +132,12 @@ class Iso_Superficie(object):
         ss = []
         ts = []
 
-        # Definimos la coordenada t la cual es unica para cada linea de corriente
-        tscale = np.sqrt((self.meshXmax - self.meshXmin) ** 2 + (self.meshYmax - self.meshYmin) ** 2) / nstream
-        xs0 = streamlines[0][0][0]
-        ys0 = streamlines[0][1][0]
         for enum, st in enumerate(streamlines):
             xs.extend(st[0])
             ys.extend(st[1])
             ss.extend(st[2])
             dzs.extend(st[3])
-            if enum <= len(streamlines):
-                tscale2 = np.sqrt((xs0 - st[0][0])**2 + (ys0 - st[1][0])**2)
-            else:
-                tscale2 = np.sqrt((xs0 - st[0][0]) ** 2 + (ys0 - st[1][0]) ** 2)
-            ts.extend([tscale2 * tscale] * len(st[0]))
+            ts.extend(st[4])
 
         self.SG = griddata((xs, ys), ss, (self.XG, self.YG), method='cubic')
         self.TG = griddata((xs, ys), ts, (self.XG, self.YG), method='cubic')

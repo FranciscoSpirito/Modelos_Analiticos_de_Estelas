@@ -26,10 +26,7 @@ from Iso_Superficie import Iso_Superficie
 def calcular_potencia_del_parque_con_terreno(modelo_deficit, metodo_superposicion, parque_de_turbinas, u_inf, iso_s,
                                                 lista_coord_normalizadas, lista_dAi_normalizados):
 
-    parque_de_turbinas.ordenar_turbinas_de_izquierda_a_derecha()
-    lista_de_turbinas = parque_de_turbinas.turbinas
-    # lista que guardara los deficits normalizados generados por todas las turbinas a la izquierda de coord
-    deficit_normalizado_en_coord = []
+    parque_de_turbinas.ordenar_turbinas_de_izquierda_a_derecha_con_terreno()
     # Radio maximo de la "zona influyente" de interseccion con las ldc de las turbinas aguas abajo
     # (turbinas con estelas fuera de esta zona, no se tomara en cuenta su influencia)
     rmax = 500
@@ -38,10 +35,10 @@ def calcular_potencia_del_parque_con_terreno(modelo_deficit, metodo_superposicio
     samp_l = np.linspace(-1, 1, nsamp)
 
     # Loop para calculo de deficits en la coordenada generado por las turbinas aguas abajo
-    for turbina_selec in lista_de_turbinas:
+    for turbina_selec in parque_de_turbinas.turbinas:
 
         turbina_selec.desnormalizar_coord_y_areas(lista_coord_normalizadas, lista_dAi_normalizados)
-        turbinas_a_la_izquierda_de_turbina_selec = parque_de_turbinas.turbinas_a_la_izquierda_de_una_coord(turbina_selec.coord)
+        turbinas_a_la_izquierda_de_turbina_selec = parque_de_turbinas.turbinas_a_la_izquierda_de_una_coord_con_terreno(turbina_selec.coord, iso_s)
         cantidad_turbinas_izquierda_de_selec = len(turbinas_a_la_izquierda_de_turbina_selec)
 
         #  Calculo de zona influyente de la turbina seleccionada samp_xy
@@ -68,7 +65,7 @@ def calcular_potencia_del_parque_con_terreno(modelo_deficit, metodo_superposicio
             # calculo de interseccion con zona influyente de turbina_selec, si existe interseccion samp_l_int sera un valor normalizado entre -1 y 1
             # en caso contrario sera None
             valores_x = [ iso_s._interp_t(samp_xy[0, i], samp_xy[1 , i]).item() for i in range(len(samp_xy[0]))]
-            samp_l_int = interp1d(valores_x, samp_l, kind='cubic', bounds_error=False)(turbina_a_la_izquierda.t)
+            samp_l_int = interp1d(valores_x, samp_l, kind='cubic', bounds_error=False)(turbina_a_la_izquierda.t).item()
 
             # calculo del deficit en las coord de la turbina_selec
             for coordenada in turbina_selec.lista_coord:

@@ -20,24 +20,23 @@ frandsen = Frandsen()
 gaussiana = Gaussiana()
 
 u_inf = U_inf()
-u_inf.coord_mast = 8.2
-u_inf.perfil = 'log'
+u_inf.u_mast = 8.2
+u_inf.perfil = 'cte'
 
 
 D = 90
 
 
-turbina_0 = Turbina_Rawson(Coord(np.array([(-20),(10),250])))
+"""turbina_0 = Turbina_Rawson(Coord(np.array([(-20),(10),250])))
 turbina_1 = Turbina_Rawson(Coord(np.array([(-10),(-5),250])))
 turbina_2 = Turbina_Rawson(Coord(np.array([(30),(10),250])))
 turbina_3 = Turbina_Rawson(Coord(np.array([(3),(0),250])))
 
 
 turbinas_list = [turbina_0, turbina_1, turbina_2]
-
+"""
 z_ground = 154
 
-"""
 turbina_0 = Turbina_Rawson(Coord(np.array([(0),(0),260 - z_ground])))
 turbina_1 = Turbina_Rawson(Coord(np.array([(-204.9),(286.1),269 - z_ground])))
 turbina_2 = Turbina_Rawson(Coord(np.array([(41.9),(565.7),256 - z_ground])))
@@ -90,7 +89,7 @@ turbina_24, turbina_25, turbina_26, turbina_27, turbina_28, turbina_29,
 turbina_30, turbina_31, turbina_32, turbina_33, turbina_34, turbina_35,
 turbina_36, turbina_37, turbina_38, turbina_39, turbina_40, turbina_41,
 turbina_42]
-"""
+
 # turbinas_list = [turbina_0, turbina_1, turbina_2, turbina_3, turbina_4, turbina_5, turbina_6, turbina_7, turbina_8, turbina_9, turbina_10, turbina_11, turbina_17]
 z_mast = turbina_0.coord.z
 # z_0 de la superficie
@@ -99,31 +98,31 @@ parque_de_turbinas = Parque_de_turbinas(turbinas_list, z_0, z_mast)
 
 
 
-cantidad_de_puntos = 1
+cantidad_de_puntos = 5
 espesor = turbina_0.definicion_de_espesor(cantidad_de_puntos)
 lista_coord_normalizadas, lista_dAi_normalizados = turbina_0.coordenadas_y_areas_normalizadas(cantidad_de_puntos, espesor)
 
 
 
 
-x_o = 6000000
-y_o = 6000000
-z_o = 6000000
+x_o = 10
+y_o = 0
+z_o = 260 - z_ground
 
 coord = Coord(np.array([x_o, y_o, z_o]))
 
 # angulo = 90
 # parque_de_turbinas.rotar(angulo)
-data_prueba = calcular_u_en_coord_integral_deterministica(frandsen, 'linear', coord, parque_de_turbinas, u_inf, lista_coord_normalizadas,lista_dAi_normalizados)
-
+data_prueba = calcular_u_en_coord_integral_deterministica(gaussiana, 'linear', coord, parque_de_turbinas, u_inf, lista_coord_normalizadas,lista_dAi_normalizados)
+print(data_prueba)
 # potencia nominal cuando la turbina trabaja con un viento de 8.2 m/s
 potencia_mast = 949.027296358
-
-potencia_de_cada_turbina_normalizada = []
-
-for turbina in turbinas_list:
-    if turbina.potencia == None:
-        print(turbina.coord)
-    potencia_de_cada_turbina_normalizada.append(float(turbina.potencia)/potencia_mast)
-
-print(sum(potencia_de_cada_turbina_normalizada))
+#
+# potencia_de_cada_turbina_normalizada = []
+#
+# for turbina in turbinas_list:
+#     if turbina.potencia == None:
+#         print(turbina.coord)
+#     potencia_de_cada_turbina_normalizada.append(float(turbina.potencia)/potencia_mast)
+#
+# print(sum(potencia_de_cada_turbina_normalizada))

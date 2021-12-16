@@ -26,15 +26,14 @@ def calcular_u_en_coord_integral_deterministica(modelo_deficit, metodo_superposi
     # lista que guardara los deficits normalizados generados por todas las turbinas a la izquierda de coord
     deficit_normalizado_en_coord = []
 
-
+    # Loop para calculo de deficits en la coordenada generado por las turbinas aguas abajo
     for turbina_selec in turbinas_a_la_izquierda_de_coord:
 
         turbina_selec.desnormalizar_coord_y_areas(lista_coord_normalizadas, lista_dAi_normalizados)
         turbinas_a_la_izquierda_de_turbina_selec = parque_de_turbinas.turbinas_a_la_izquierda_de_una_coord(turbina_selec.coord)
         cantidad_turbinas_izquierda_de_selec = len(turbinas_a_la_izquierda_de_turbina_selec)
 
-        # lista que guardara los deficits generados sobre las coordenadas random dentro del disco
-        # de turbina selec para calcular el montecarlo
+        # lista que guardara los deficits generados sobre las coordenadas dentro del disco de turbina_selec
         arreglo_deficit = []
 
         # separa el caso en el que la turbina es la 'mas a la izquierda', es decir, es la turbina que recibe
@@ -44,36 +43,35 @@ def calcular_u_en_coord_integral_deterministica(modelo_deficit, metodo_superposi
             turbina_virtual.c_T = 0
             turbinas_a_la_izquierda_de_turbina_selec = [turbina_virtual]
 
+        # Loop para calculo de deficits en la turbina_selec generado por las turbinas aguas abajo
         for turbina_a_la_izquierda in turbinas_a_la_izquierda_de_turbina_selec:
 
             # calculo del deficit en las coord de coord_turbina_selec
             for coordenada in turbina_selec.lista_coord:
                 deficit_normalizado_en_coordenada = modelo_deficit.evaluar_deficit_normalizado(turbina_a_la_izquierda, coordenada)
                 arreglo_deficit.append(deficit_normalizado_en_coordenada)
-                
-        cantidad_coords = len(turbina_selec.lista_coord)
 
-        # crea una instancia de Estela con los datos calculados sobre las coordenadas aleatorias
-        estela_sobre_turbina_selec = Estela(arreglo_deficit, cantidad_coords, cantidad_turbinas_izquierda_de_selec)
+
+        # crea una instancia de Estela con los datos calculados sobre las coordenadas
+        estela_sobre_turbina_selec = Estela(arreglo_deficit, len(turbina_selec.lista_coord), cantidad_turbinas_izquierda_de_selec)
         estela_sobre_turbina_selec.merge(metodo_superposicion)
 
         # Se calculan C_T C_P y Potencia de cada turbina
-        turbina_selec.calcular_c_T_Int_Det(estela_sobre_turbina_selec, parque_de_turbinas.z_0, parque_de_turbinas.z_mast, u_inf)
-        turbina_selec.calcular_c_P_Int_Det(estela_sobre_turbina_selec, parque_de_turbinas.z_0, parque_de_turbinas.z_mast, u_inf)
-        turbina_selec.calcular_P_Int_Det(estela_sobre_turbina_selec, parque_de_turbinas.z_0, parque_de_turbinas.z_mast, u_inf)
+        turbina_selec.u_adentro_disco_integral_deterministica(u_inf, estela_sobre_turbina_selec, parque_de_turbinas.z_mast, parque_de_turbinas.z_0)
+        turbina_selec.calcular_c_T_Int_Det()
+        turbina_selec.calcular_c_P_Int_Det()
+        turbina_selec.calcular_P_Int_Det()
 
-        # calcula el deficit generado por la turbina seleccionada (ya tiene el c_T como para hacer esto)
-        # sobre la coordenada coord
+        # calcula el deficit generado por la turbina seleccionada (ya tiene el c_T como para hacer esto) sobre la coordenada coord
         deficit_normalizado_en_coord_contribucion_turbina_selec = modelo_deficit.evaluar_deficit_normalizado(turbina_selec, coord)
         deficit_normalizado_en_coord.append(deficit_normalizado_en_coord_contribucion_turbina_selec)
 
-    # crea una instancia de Estela con los datos calculados sobre coord generados por las coordenadas a
-    # la izquierda
+    # crea una instancia de Estela con los datos calculados sobre coord generados por las coordenadas a la izquierda
     estela_sobre_coord = Estela(deficit_normalizado_en_coord, 1, len(turbinas_a_la_izquierda_de_coord))
     estela_sobre_coord.merge(metodo_superposicion)
 
     # define el parametro coord de la instancia u_inf como la coord
     u_inf.coord = coord
     u_inf.perfil_flujo_base(parque_de_turbinas.z_mast, parque_de_turbinas.z_0)
-    u = u_inf.coord * (1 - estela_sobre_coord.mergeada[0])
+    u = u_inf.u_perfil * (1 - estela_sobre_coord.mergeada[0])
     return u

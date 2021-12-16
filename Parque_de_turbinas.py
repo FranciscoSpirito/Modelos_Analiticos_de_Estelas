@@ -17,12 +17,25 @@ class Parque_de_turbinas(object):
         for turbina in self.turbinas:
             self.turbinas.sort(key=lambda turbina:turbina.coord.x)
 
+    def ordenar_turbinas_de_izquierda_a_derecha_con_terreno(self):
+        turbinas_ordenadas = []
+        for turbina in self.turbinas:
+            self.turbinas.sort(key=lambda turbina:turbina.s)
+
     # OUTPUT:
     # lista de turbinas a la izquierda de una coordenada
     def turbinas_a_la_izquierda_de_una_coord(self, una_coord):
         turbinas_a_la_izquierda = []
         for turbina in self.turbinas:
             if (turbina.coord.x < una_coord.x):
+                turbinas_a_la_izquierda.append(turbina)
+        return turbinas_a_la_izquierda
+
+    def turbinas_a_la_izquierda_de_una_coord_con_terreno(self, una_coord, iso_s):
+        turbinas_a_la_izquierda = []
+        una_coord_s = iso_s._interp_s(una_coord.x, una_coord.y).item()
+        for turbina in self.turbinas:
+            if (turbina.s < una_coord_s):
                 turbinas_a_la_izquierda.append(turbina)
         return turbinas_a_la_izquierda
 

@@ -201,8 +201,8 @@ for iso_s, angulo in zip(isoSuperficies, angulos):
      for line in streamlines:
           axes[0,1].plot(line[0], line[1], '.r')
      axes[0,1].set_title('Streamlines')
-     line_prueba = streamlines[8]
-     axes[0,1].plot(line_prueba[0][0], line_prueba[1][0], 'y')
+     line_prueba = streamlines[2]
+     axes[0,1].plot(line_prueba[0][3], line_prueba[1][3], 'y')
      axes[0,1].plot(line_prueba[0][len(line_prueba[0])-3], line_prueba[1][len(line_prueba[0])-3], 'k')
 
      iso_s.redef_interpoladores(streamlines)

@@ -25,6 +25,7 @@ class Turbina(object):
         self.lista_dAi = None
         self.U_f_base = None
         self.t = None
+        self.s = None
         self.c_T = None
         self.c_P = None
         self.potencia = None
