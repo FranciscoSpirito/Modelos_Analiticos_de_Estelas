@@ -1,5 +1,6 @@
 import numpy as np
-from scipy.interpolate import griddata, RectBivariateSpline, interp2d, bisplrep, LinearNDInterpolator
+from scipy.interpolate import griddata, RectBivariateSpline
+from math import ceil
 
 # Proyecto original: https://github.com/rougier/windmap
 
@@ -45,7 +46,7 @@ class Iso_Superficie(object):
 
 
     # Genera un streamline desde el punto x0 y0 hacia adelante o atras
-    def _makeHalfStreamline(self, x0, y0, xmin, xmax, ymin, ymax, dr, sign):
+    def _makeHalfStreamline(self, x0, y0, xmin, xmax, ymin, ymax, dr, s0, sign):
         """
         Compute a streamline extending in one direction from the given point.
         """
@@ -53,15 +54,21 @@ class Iso_Superficie(object):
         sx = []
         sy = []
         ss = []
-        sz = []
+        sdz = []
         su = []
         sv = []
         sw = []
 
         x = x0
         y = y0
-        s = 0.
+        s = s0
         dz = 0.
+
+        sx.append(x)
+        sy.append(y)
+        sdz.append(dz)
+        ss.append(s)
+
 
         while xmin <= x <= xmax and ymin <= y <= ymax:
             u = self._interp_u(x, y).item()
@@ -78,61 +85,63 @@ class Iso_Superficie(object):
 
             sx.append(x)
             sy.append(y)
-            sz.append(dz)
+            sdz.append(dz)
             ss.append(s)
             su.append(u)
             sv.append(v)
             sw.append(w)
 
-        return sx, sy, sz, ss, su, sv, sw
+        return sx, sy, sdz, ss
 
     # Genera un streamline desde el punto x0 y0 hacia adelante y atras
-    def _makeStreamline(self, x0, y0, dr):
+    def _makeStreamline(self, x_semillas, y_semillas, dr, angulo):
         """
         Compute a streamline extending in both directions from the given point.
         """
+        streamlines = []
+        for x0, y0 in zip(x_semillas, y_semillas):
 
-        xmin, xmax = self.meshXmin - self.paso_grid, self.meshXmax + self.paso_grid
-        ymin, ymax = self.meshYmin - self.paso_grid, self.meshYmax + self.paso_grid
+            if angulo in [0, 90, 180, 270]:
+                s0 = 0.
+            elif angulo in [22.5, 45, 67.5]:
+                if len(streamlines) > 0 and x0 <= x_prev and y0 <= y_prev:
+                    s0 = streamline[3][0]
+                else:
+                    s0 = 0.
+            elif angulo in [112.5, 135, 157.5]:
+                if len(streamlines) > 0 and x0 <= x_prev and y0 >= y_prev:
+                    s0 = streamline[3][1]
+                else:
+                    s0 = 0.
+            elif angulo in [112.5, 135, 157.5]:
+                if len(streamlines) > 0 and x0 <= x_prev and y0 >= y_prev:
+                    s0 = streamline[3][1]
+                else:
+                    s0 = 0.
+            elif angulo in [202.5, 225, 247.5]:
+                if len(streamlines) > 0 and x0 >= x_prev and y0 >= y_prev:
+                    s0 = streamline[3][1]
+                else:
+                    s0 = 0.
+            else:
+                if len(streamlines) > 0 and x0 >= x_prev and y0 <= y_prev:
+                    s0 = streamline[3][1]
+                else:
+                    s0 = 0.
 
-        sx, sy, sz, ss, su, sv, sw = self._makeHalfStreamline(x0, y0, xmin, xmax, ymin, ymax, dr, 1)  # forwards
-        # rx, ry, rz, rs, ru, rv, rw = self._makeHalfStreamline(x0, y0, xmin, xmax, ymin, ymax, dr, -1)  # backwards
-        #
-        # rx.reverse()
-        # ry.reverse()
-        # rz.reverse()
-        # rs.reverse()
-        # ru.reverse()
-        # rv.reverse()
-        # rw.reverse()
-        # # Busqueda de Semilla para corregir desplazamiento en z, buscamos comenzar desde el w_min, lo que indicaria el punto mas cercano a la isosuperficie
-        # ssx = rx + [x0] + sx
-        # ssy = ry + [y0] + sy
-        #
-        # w_i = []
-        # for x, y in zip(ssx, ssy):
-        #     w_i.append(self._interp_w(x, y).item())
-        # x_semilla = ssx[w_i.index(min(w_i))]
-        # y_semilla = ssy[w_i.index(min(w_i))]
-        #
-        # # Recalculamos streamlines desde las nuevas semillas
-        # sx, sy, sz, ss, su, sv, sw = self._makeHalfStreamline(x_semilla, y_semilla, xmin - dr, xmax + dr, ymin - dr, ymax + dr, dr, 1)  # forwards
-        # rx, ry, rz, rs, ru, rv, rw = self._makeHalfStreamline(x_semilla, y_semilla, xmin - dr, xmax + dr, ymin - dr, ymax + dr, dr, -1)  # backwards
-        #
-        # rx.reverse()
-        # ry.reverse()
-        # rz.reverse()
-        # rs.reverse()
-        # ru.reverse()
-        # rv.reverse()
-        # rw.reverse()
-        #
-        u_semilla = self._interp_u(x0, y0).item()
-        v_semilla = self._interp_v(x0, y0).item()
-        w_semilla = self._interp_w(x0, y0).item()
 
-        # return rx + [x0] + sx, ry + [x0] + sy, rz + [0.] + sz, rs + [0.] + ss, ru + [u_semilla] + su, rv + [v_semilla] + sv, rw + [w_semilla] + sw
-        return sx, sy, sz, ss, su, sv, sw
+            xmin, xmax = self.meshXmin - self.paso_grid, self.meshXmax + self.paso_grid
+            ymin, ymax = self.meshYmin - self.paso_grid, self.meshYmax + self.paso_grid
+
+            sx, sy, sdz, ss = self._makeHalfStreamline(x0, y0, xmin, xmax, ymin, ymax, dr, s0, 1)  # forwards
+
+            streamline = [sx, sy, ss, sdz]
+            streamlines.append(streamline)
+
+            x_prev = x0
+            y_prev = y0
+
+        return streamlines
 
     # Redefine interpoladores, luego de rotar las streamlines
     def redef_interpoladores(self, streamlines):
@@ -143,65 +152,30 @@ class Iso_Superficie(object):
         dzs = []
         ss = []
         ts = []
-        us = []
-        vs = []
-        ws = []
 
         # Definimos la coordenada t la cual es unica para cada linea de corriente
         tscale = np.sqrt((self.meshXmax - self.meshXmin) ** 2 + (self.meshYmax - self.meshYmin) ** 2) / nstream
-
+        xs0 = streamlines[0][0][0]
+        ys0 = streamlines[0][1][0]
         for enum, st in enumerate(streamlines):
             xs.extend(st[0])
             ys.extend(st[1])
-            dzs.extend(st[2])
-            ss.extend(st[3])
-            us.extend(st[4])
-            vs.extend(st[5])
-            ws.extend(st[6])
+            ss.extend(st[2])
+            dzs.extend(st[3])
+            if enum <= len(streamlines):
+                tscale2 = np.sqrt((xs0 - st[0][0])**2 + (ys0 - st[1][0])**2)
+            else:
+                tscale2 = np.sqrt((xs0 - st[0][0]) ** 2 + (ys0 - st[1][0]) ** 2)
+            ts.extend([tscale2 * tscale] * len(st[0]))
 
-            ts.extend([enum * tscale] * len(st[0]))
+        self.SG = griddata((xs, ys), ss, (self.XG, self.YG), method='cubic')
+        self.TG = griddata((xs, ys), ts, (self.XG, self.YG), method='cubic')
+        self.DZG = griddata((xs, ys), dzs, (self.XG, self.YG), method='cubic')
 
-        # # Al rotar la malla ya no es un rectangulo horizontal, por lo que debemos redefinirla
-        # npoiX = int((max(xs) - min(xs))/self.paso_grid)
-        # npoiY = int((max(ys) - min(ys)) / self.paso_grid)
-        # xg = np.linspace(int(min(xs)), int(max(xs)), npoiX)
-        # yg = np.linspace(int(min(ys)), int(max(ys)), npoiY)
-        # XG, YG = np.meshgrid(xg, yg)
-        #
-        # SG = griddata((xs, ys), ss, (XG, YG), method='cubic')
-        # TG = griddata((xs, ys), ts, (XG, YG), method='cubic')
-        # DZG = griddata((xs, ys), dzs, (XG, YG), method='cubic')
-        # UG = griddata((xs, ys), us, (XG, YG), method='cubic')
-        # VG = griddata((xs, ys), vs, (XG, YG), method='cubic')
-        # WG = griddata((xs, ys), ws, (XG, YG), method='cubic')
-        #
-        # # Remplazamos los valores NaN que estan fuera del rango de valores para interpolar, con el mas cercano de la fila sin no usamos nearest
-        # # mask = np.isnan(SG)
-        # # SG[mask] = np.interp(np.flatnonzero(mask), np.flatnonzero(~mask), SG[~mask])
-        # # mask = np.isnan(TG)
-        # # TG[mask] = np.interp(np.flatnonzero(mask), np.flatnonzero(~mask), TG[~mask])
-        # # mask = np.isnan(DZG)
-        # # DZG[mask] = np.interp(np.flatnonzero(mask), np.flatnonzero(~mask), DZG[~mask])
-        # # mask = np.isnan(UG)
-        # # UG[mask] = np.interp(np.flatnonzero(mask), np.flatnonzero(~mask), UG[~mask])
-        # # mask = np.isnan(VG)
-        # # VG[mask] = np.interp(np.flatnonzero(mask), np.flatnonzero(~mask), VG[~mask])
-        # # mask = np.isnan(WG)
-        # # WG[mask] = np.interp(np.flatnonzero(mask), np.flatnonzero(~mask), WG[~mask])
-        #
-        # self._interp_s = RectBivariateSpline(xg, yg, SG.T)
-        # self._interp_t = RectBivariateSpline(xg, yg, TG.T)
-        # self._interp_dz = RectBivariateSpline(xg, yg, DZG.T)
-        # self._interp_u = RectBivariateSpline(xg, yg, UG.T)
-        # self._interp_v = RectBivariateSpline(xg, yg, VG.T)
-        # self._interp_w = RectBivariateSpline(xg, yg, WG.T)
+        self._interp_s = RectBivariateSpline(self.xg, self.yg, self.SG.T)
+        self._interp_t = RectBivariateSpline(self.xg, self.yg, self.TG.T)
+        self._interp_dz = RectBivariateSpline(self.xg, self.yg, self.DZG.T)
 
-        self._interp_s = LinearNDInterpolator(list(zip(xs, ys)), ss)
-        self._interp_t = LinearNDInterpolator(list(zip(xs, ys)), ts)
-        self._interp_dz = LinearNDInterpolator(list(zip(xs, ys)), dzs)
-        self._interp_u = LinearNDInterpolator(list(zip(xs, ys)), us)
-        self._interp_v = LinearNDInterpolator(list(zip(xs, ys)), vs)
-        self._interp_w = LinearNDInterpolator(list(zip(xs, ys)), ws)
 
     def flujo_base_turbinas(self, lista_turbinas):
 
@@ -215,6 +189,7 @@ class Iso_Superficie(object):
 
             # turbina.t = self._interp_t(*coord_xy, grid=False).item()   # Este usabamos con RectBivariateSpline
             turbina.t = self._interp_t(*coord_xy).item()
+            turbina.s = self._interp_s(*coord_xy).item()
 
 
     # Define la semilla inicial, debe cubrir todo el terreno
@@ -222,8 +197,7 @@ class Iso_Superficie(object):
 
         b = self.meshXmax - self.meshXmin
         h = self.meshYmax - self.meshYmin
-        alfa = np.arctan(h/b)
-        dr = (b / np.cos(alfa)) / nstream
+        dr = (np.sqrt(b**2 + h**2)) / nstream
 
         if angulo == 0:
             x_semilla = np.linspace(self.meshXmin, self.meshXmax, nstream)
@@ -237,21 +211,11 @@ class Iso_Superficie(object):
         elif angulo == 270:
             y_semilla = np.linspace(self.meshYmin, self.meshYmax, nstream)
             x_semilla = np.full(np.shape(y_semilla), self.meshXmin)
-        elif angulo in [202.5, 225, 247.5]:
-            angulo_rad = np.radians(angulo)
-            nstream_x = int(abs(b / (dr / np.sin(angulo_rad))))
-            nstream_y = int(abs(b / (dr / np.sin(np.pi/2 - angulo_rad))))
-            y_semilla = np.linspace(self.meshYmin, self.meshYmax, nstream_y)
-            x_semilla = np.full(np.shape(y_semilla), self.meshXmin)
-            x_semilla1 = np.linspace(self.meshXmin, self.meshXmax, nstream_x)
-            y_semilla1 = np.full(np.shape(x_semilla1), self.meshYmin)
-            x_semilla = np.append(x_semilla, x_semilla1)
-            y_semilla = np.append(y_semilla, y_semilla1)
         elif angulo in [22.5, 45, 67.5]:
             angulo_rad = np.radians(angulo)
-            nstream_x = int(abs(b / (dr / np.sin(angulo_rad))))
-            nstream_y = int(abs(b / (dr / np.sin(np.pi / 2 - angulo_rad))))
-            x_semilla = np.linspace(self.meshXmin, self.meshXmax, nstream_x)
+            nstream_x = int(ceil(abs(b / (dr / np.sin(np.pi / 2 - angulo_rad)))))
+            nstream_y = int(ceil(abs(b / (dr / np.sin(angulo_rad)))))
+            x_semilla = np.linspace(self.meshXmax, self.meshXmin, nstream_x)
             y_semilla = np.full(np.shape(x_semilla), self.meshYmax)
             y_semilla1 = np.linspace(self.meshYmax, self.meshYmin, nstream_y)
             x_semilla1 = np.full(np.shape(y_semilla1), self.meshXmax)
@@ -259,21 +223,31 @@ class Iso_Superficie(object):
             y_semilla = np.append(y_semilla, y_semilla1)
         elif angulo in [112.5, 135, 157.5]:
             angulo_rad = np.radians(angulo)
-            nstream_x = int(abs(b / (dr / np.sin(angulo_rad))))
-            nstream_y = int(abs(b / (dr / np.sin(np.pi / 2 - angulo_rad))))
-            y_semilla = np.linspace(self.meshYmax, self.meshYmin, nstream_y)
+            nstream_x = int(ceil(abs(b / (dr / np.sin(np.pi / 2 - angulo_rad)))))
+            nstream_y = int(ceil(abs(b / (dr / np.sin(angulo_rad)))))
+            y_semilla = np.linspace(self.meshYmin, self.meshYmax, nstream_y)
             x_semilla = np.full(np.shape(y_semilla), self.meshXmax)
             x_semilla1 = np.linspace(self.meshXmax, self.meshXmin, nstream_x)
             y_semilla1 = np.full(np.shape(x_semilla1), self.meshYmin)
             x_semilla = np.append(x_semilla, x_semilla1)
             y_semilla = np.append(y_semilla, y_semilla1)
+        elif angulo in [202.5, 225, 247.5]:
+            angulo_rad = np.radians(angulo)
+            nstream_x = int(ceil(abs(b / (dr / np.sin(np.pi / 2 - angulo_rad)))))
+            nstream_y = int(ceil(abs(b / (dr / np.sin(angulo_rad)))))
+            y_semilla = np.linspace(self.meshYmin, self.meshYmax, nstream_y)
+            x_semilla = np.full(np.shape(y_semilla), self.meshXmin)
+            x_semilla1 = np.linspace(self.meshXmin, self.meshXmax, nstream_x)
+            y_semilla1 = np.full(np.shape(x_semilla1), self.meshYmin)
+            x_semilla = np.append(x_semilla, x_semilla1)
+            y_semilla = np.append(y_semilla, y_semilla1)
         else:
             angulo_rad = np.radians(angulo)
-            nstream_x = int(abs(b / (dr / np.sin(angulo_rad))))
-            nstream_y = int(abs(b / (dr / np.sin(np.pi / 2 - angulo_rad))))
-            y_semilla = np.linspace(self.meshYmin, self.meshYmax, nstream_y)
+            nstream_x = int(ceil(abs(b / (dr / np.sin(np.pi / 2 - angulo_rad)))))
+            nstream_y = int(ceil(abs(b / (dr / np.sin(angulo_rad)))))
+            y_semilla = np.linspace(self.meshYmax, self.meshYmin, nstream_y)
             x_semilla= np.full(np.shape(y_semilla), self.meshXmin)
-            x_semilla1 = np.linspace(self.meshXmax, self.meshXmin, nstream_x)
+            x_semilla1 = np.linspace(self.meshXmin, self.meshXmax, nstream_x)
             y_semilla1 = np.full(np.shape(x_semilla1), self.meshYmax)
             x_semilla = np.append(x_semilla, x_semilla1)
             y_semilla = np.append(y_semilla, y_semilla1)
@@ -296,22 +270,6 @@ class Iso_Superficie(object):
                 streamline[4][i] = vector_vel_rotado.getA1()[0]
                 streamline[5][i] = vector_vel_rotado.getA1()[1]
         return streamlines
-
-    # def rotar(self, angulo_viento ):
-    #     theta = 360 - angulo_viento
-    #     theta_rad = (np.pi / 180) * theta
-    #     R = np.matrix([[np.cos(theta_rad), -np.sin(theta_rad)], [np.sin(theta_rad), np.cos(theta_rad)]])
-    #
-    #     for i in range(len(self.X)):
-    #         vector_coord = np.array([self.X[i], self.Y[i]])
-    #         vector_coord_rotado = np.dot(R, vector_coord)
-    #         self.X[i] = vector_coord_rotado.getA1()[0]
-    #         self.Y[i] = vector_coord_rotado.getA1()[1]
-    #         vector_vel = np.array([self.U[i], self.V[i]])
-    #         vector_vel_rotado = np.dot(R, vector_vel)
-    #         self.U[i] = vector_vel_rotado.getA1()[0]
-    #         self.V[i] = vector_vel_rotado.getA1()[1]
-
 
 
 

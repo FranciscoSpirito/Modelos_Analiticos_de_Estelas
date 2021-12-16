@@ -5,19 +5,8 @@ from Iso_Superficie import Iso_Superficie
 from load_txt_datos import cargar_datos
 import matplotlib.pyplot as plt
 from Coord import Coord
+from mpl_toolkits.axes_grid1 import make_axes_locatable
 
-"""Con datos de CFD"""
-ruta  = r"C:\Users\chesp\Documents\Ingenieria Mecanica\Tesis\Modelos_Analiticos_de_Estelas\Datos_Rawson_sin_Turbinas\U_superficie_gondolas.Dir.67.50.U8.50.raw"
-xl, yl, zl, ul, vl, wl = cargar_datos('isosuperficie', ruta)
-x = np.array(xl)
-y = np.array(yl)
-z = np.array(zl)
-u = np.array(ul)
-v = np.array(vl)
-w = np.array(wl)
-coord_turbina1 = Coord(np.array([400, 400, 260]))
-coord_turbina2 = Coord(np.array([500, 500, 260]))
-coord_turbina3 = Coord(np.array([10, 10, 260]))
 
 
 """Con una funcion simple que podemos ver los resultados aca: https://www.desmos.com/calculator/eijhparfmd"""
@@ -58,7 +47,6 @@ coord_turbina3 = Coord(np.array([10, 10, 260]))
 
 
 # Prueba
-# iso_s = Iso_Superficie(x, y, z, u, v, w, 10)
 # nstream = 20 # cantidad de streamlines
 # meshXmin, meshXmax = 1000, 5500
 # meshYmin, meshYmax = 500, 5000
@@ -117,31 +105,118 @@ coord_turbina3 = Coord(np.array([10, 10, 260]))
 
 
 
-fig1, axes1 = plt.subplots(1, 2)
-iso_s = Iso_Superficie(x, y, z, u, v, w)
-angulo = 67.5
-nstream = 20 # cantidad de streamlines
-iso_s.new_grid(100)
-x0, y0 = iso_s.gen_semillas(angulo, nstream)
-axes1[1].plot(x0, y0, 'o')
-dr = 250
-streamlines = [iso_s._makeStreamline(*xy, dr) for xy in zip(x0, y0)]
-axes1[0].contourf(iso_s.XG, iso_s.YG, iso_s.ZG, 10)
-for line in streamlines:
-    axes1[0].plot(line[0], line[1], '.r')
-line = streamlines[7]
-axes1[0].plot(line[0][0], line[1][0], '.y')
-axes1[0].plot(line[0][len(line[1])-1], line[1][len(line[1])-1], '.k')
-axes1[0].streamplot(iso_s.XG, iso_s.YG, iso_s.UG, iso_s.VG, color='k', linewidth=.5)
+# fig1, axes1 = plt.subplots(1, 2)
+# iso_s = Iso_Superficie(x, y, z, u, v, w)
+# angulo = 67.5
+# nstream = 20 # cantidad de streamlines
+# iso_s.new_grid(100)
+# x0, y0 = iso_s.gen_semillas(angulo, nstream)
+# axes1[1].plot(x0, y0, 'o')
+# dr = 250
+# streamlines = [iso_s._makeStreamline(*xy, dr) for xy in zip(x0, y0)]
+# axes1[0].contourf(iso_s.XG, iso_s.YG, iso_s.ZG, 10)
+# for line in streamlines:
+#     axes1[0].plot(line[0], line[1], '.r')
+# line = streamlines[7]
+# axes1[0].plot(line[0][0], line[1][0], '.y')
+# axes1[0].plot(line[0][len(line[1])-1], line[1][len(line[1])-1], '.k')
+# axes1[0].streamplot(iso_s.XG, iso_s.YG, iso_s.UG, iso_s.VG, color='k', linewidth=.5)
+#
+#
+# streamlines1 = iso_s.rotar(angulo, streamlines)
+# fig2, axes2 = plt.subplots(1, 2)
+# axes2[1] = plt.plot(x0, y0, 'o')
+# dr = 250
+# for line1 in streamlines1:
+#     axes2[0].plot(line1[0], line1[1], '.r')
+# line1 = streamlines1[7]
+# axes2[0].plot(line1[0][0], line1[1][0], '.y')
+# axes2[0].plot(line1[0][len(line1[1])-1], line1[1][len(line1[1])-1], '.k')
+# plt.show()
 
+# angulos = [0, 22.5, 90, 135, 180, 225, 270, 315]
+# for angulo in angulos:
+#     x_semillas, y_semillas = iso_s.gen_semillas(angulo, 20)
+#     streamlines = iso_s._makeStreamline(angulo, x_semillas, y_semillas, 250)
+#     plt.plot(streamlines[i][0], streamlines[i][1])
+#     plt.title(angulo)
+#     i += 1
+#     plt.show()
 
-streamlines1 = iso_s.rotar(angulo, streamlines)
-fig2, axes2 = plt.subplots(1, 2)
-axes2[1] = plt.plot(x0, y0, 'o')
-dr = 250
-for line in streamlines1:
-    axes2[0].plot(line[0], line[1], '.r')
-line = streamlines1[7]
-axes2[0].plot(line[0][0], line[1][0], '.y')
-axes2[0].plot(line[0][len(line[1])-1], line[1][len(line[1])-1], '.k')
-plt.show()
+    # for i in range(len(x_semillas)):
+    #     x = x_semillas[i]
+    #     y = y_semillas[i]
+    #     plt.plot(x, y, 'bo')
+    #     plt.text(x * (1 + 0.01), y * (1 + 0.01), i, fontsize=12)
+    # plt.title("angulo = " + str(angulo))
+    # plt.xlabel('x')
+    # plt.ylabel('y')
+    # plt.xlim(iso_s.meshXmin-100, iso_s.meshXmax+100)
+    # plt.ylim(iso_s.meshYmin-100, iso_s.meshYmax+100)
+    # plt.show()
+
+"""Con datos de CFD"""
+ruta1  = r"C:\Users\chesp\Documents\Ingenieria Mecanica\Tesis\Modelos_Analiticos_de_Estelas\Datos_Rawson_sin_Turbinas\U_superficie_gondolas.Dir.00.00.U8.50.raw"
+ruta2  = r"C:\Users\chesp\Documents\Ingenieria Mecanica\Tesis\Modelos_Analiticos_de_Estelas\Datos_Rawson_sin_Turbinas\U_superficie_gondolas.Dir.22.50.U8.50.raw"
+ruta3  = r"C:\Users\chesp\Documents\Ingenieria Mecanica\Tesis\Modelos_Analiticos_de_Estelas\Datos_Rawson_sin_Turbinas\U_superficie_gondolas.Dir.45.00.U8.50.raw"
+ruta4  = r"C:\Users\chesp\Documents\Ingenieria Mecanica\Tesis\Modelos_Analiticos_de_Estelas\Datos_Rawson_sin_Turbinas\U_superficie_gondolas.Dir.67.50.U8.50.raw"
+ruta5  = r"C:\Users\chesp\Documents\Ingenieria Mecanica\Tesis\Modelos_Analiticos_de_Estelas\Datos_Rawson_sin_Turbinas\U_superficie_gondolas.Dir.90.00.U8.50.raw"
+ruta6  = r"C:\Users\chesp\Documents\Ingenieria Mecanica\Tesis\Modelos_Analiticos_de_Estelas\Datos_Rawson_sin_Turbinas\U_superficie_gondolas.Dir.112.50.U8.50.raw"
+ruta7  = r"C:\Users\chesp\Documents\Ingenieria Mecanica\Tesis\Modelos_Analiticos_de_Estelas\Datos_Rawson_sin_Turbinas\U_superficie_gondolas.Dir.135.00.U8.50.raw"
+ruta8  = r"C:\Users\chesp\Documents\Ingenieria Mecanica\Tesis\Modelos_Analiticos_de_Estelas\Datos_Rawson_sin_Turbinas\U_superficie_gondolas.Dir.157.50.U8.50.raw"
+ruta9  = r"C:\Users\chesp\Documents\Ingenieria Mecanica\Tesis\Modelos_Analiticos_de_Estelas\Datos_Rawson_sin_Turbinas\U_superficie_gondolas.Dir.180.00.U8.50.raw"
+ruta10  = r"C:\Users\chesp\Documents\Ingenieria Mecanica\Tesis\Modelos_Analiticos_de_Estelas\Datos_Rawson_sin_Turbinas\U_superficie_gondolas.Dir.202.50.U8.50.raw"
+ruta11 = r"C:\Users\chesp\Documents\Ingenieria Mecanica\Tesis\Modelos_Analiticos_de_Estelas\Datos_Rawson_sin_Turbinas\U_superficie_gondolas.Dir.225.00.U8.50.raw"
+ruta12  = r"C:\Users\chesp\Documents\Ingenieria Mecanica\Tesis\Modelos_Analiticos_de_Estelas\Datos_Rawson_sin_Turbinas\U_superficie_gondolas.Dir.247.50.U8.50.raw"
+ruta13  = r"C:\Users\chesp\Documents\Ingenieria Mecanica\Tesis\Modelos_Analiticos_de_Estelas\Datos_Rawson_sin_Turbinas\U_superficie_gondolas.Dir.270.00.U8.50.raw"
+ruta14  = r"C:\Users\chesp\Documents\Ingenieria Mecanica\Tesis\Modelos_Analiticos_de_Estelas\Datos_Rawson_sin_Turbinas\U_superficie_gondolas.Dir.292.50.U8.50.raw"
+ruta15  = r"C:\Users\chesp\Documents\Ingenieria Mecanica\Tesis\Modelos_Analiticos_de_Estelas\Datos_Rawson_sin_Turbinas\U_superficie_gondolas.Dir.315.00.U8.50.raw"
+ruta16  = r"C:\Users\chesp\Documents\Ingenieria Mecanica\Tesis\Modelos_Analiticos_de_Estelas\Datos_Rawson_sin_Turbinas\U_superficie_gondolas.Dir.337.50.U8.50.raw"
+rutas = [ruta1, ruta2, ruta3, ruta4, ruta5, ruta6, ruta7, ruta8, ruta9, ruta10, ruta11, ruta12, ruta13, ruta14, ruta15, ruta16]
+isoSuperficies = []
+for ruta in rutas:
+     xl, yl, zl, ul, vl, wl = cargar_datos('isosuperficie', ruta)
+     x = np.array(xl)
+     y = np.array(yl)
+     z = np.array(zl)
+     u = np.array(ul)
+     v = np.array(vl)
+     w = np.array(wl)
+     iso_s = Iso_Superficie(x, y, z, u, v, w)
+     isoSuperficies.append(iso_s)
+
+angulos = [0, 22.5, 45, 67.5, 90, 112.5, 135, 157.5, 180, 202.5, 225, 247.5, 270, 292.5, 315, 337.5]
+for iso_s, angulo in zip(isoSuperficies, angulos):
+     fig, axes = plt.subplots(2,2)
+     fig.suptitle('angulo = '+ str(angulo))
+     iso_s.new_grid(200)
+     x_semillas, y_semillas = iso_s.gen_semillas(angulo, 20)
+
+     axes[0,0].plot(x_semillas, y_semillas, 'o')
+     axes[0,0].set_title('Semillas')
+     axes[0,0].set_xlim(iso_s.meshXmin-100, iso_s.meshXmax+100)
+     axes[0,0].set_ylim(iso_s.meshYmin-100, iso_s.meshYmax+100)
+
+     streamlines = iso_s._makeStreamline(x_semillas, y_semillas, 50, angulo)
+     for line in streamlines:
+          axes[0,1].plot(line[0], line[1], '.r')
+     axes[0,1].set_title('Streamlines')
+     line_prueba = streamlines[8]
+     axes[0,1].plot(line_prueba[0][0], line_prueba[1][0], 'y')
+     axes[0,1].plot(line_prueba[0][len(line_prueba[0])-3], line_prueba[1][len(line_prueba[0])-3], 'k')
+
+     iso_s.redef_interpoladores(streamlines)
+     count = axes[1,0].contourf(iso_s.XG, iso_s.YG, iso_s.SG, 10)
+     axes[1,0].set_title('S')
+     divider = make_axes_locatable(axes[1,0])
+     cax = divider.append_axes('right', size='5%', pad=0.05)
+     fig.colorbar(count, cax=cax, orientation='vertical')
+
+     count = axes[1,1].contourf(iso_s.XG, iso_s.YG, iso_s.TG, 10)
+     axes[1,1].set_title('T')
+     axes[1,1].get_yaxis().set_visible(False)
+     divider = make_axes_locatable(axes[1,1])
+     cax = divider.append_axes('right', size='5%', pad=0.05)
+     fig.colorbar(count, cax=cax, orientation='vertical')
+     plt.show()
+
