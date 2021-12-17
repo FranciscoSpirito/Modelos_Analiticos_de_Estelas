@@ -23,13 +23,13 @@ class Iso_Superficie(object):
 
 
     # Definicion de densidad y limites de grilla
-    def new_grid(self, npois):
-        npoiX, npoiY = npois, npois
-        self.meshXmin, self.meshXmax = np.amin(self.X) + 0.1 * (np.amax(self.X) - np.amin(self.X)), np.amax(self.X) - 0.1 * (np.amax(self.X) - np.amin(self.X))
-        self.meshYmin, self.meshYmax = np.amin(self.Y) + 0.1 * (np.amax(self.Y) - np.amin(self.Y)), np.amax(self.Y) - 0.1 * (np.amax(self.Y) - np.amin(self.Y))
+    def new_grid(self, npois, d0):
+        self.npoiX, self.npoiY = npois, npois
+        self.meshXmin, self.meshXmax = np.amin(self.X) + 8*d0, np.amax(self.X) - 8*d0
+        self.meshYmin, self.meshYmax = np.amin(self.Y) + 8*d0, np.amax(self.Y) - 8*d0
         self.paso_grid = (self.meshXmax + self.meshXmin)/npois
-        self.xg = np.linspace(self.meshXmin, self.meshXmax, npoiX)
-        self.yg = np.linspace(self.meshYmin, self.meshYmax, npoiY)
+        self.xg = np.linspace(self.meshXmin, self.meshXmax, self.npoiX)
+        self.yg = np.linspace(self.meshYmin, self.meshYmax, self.npoiY)
         self.XG, self.YG = np.meshgrid(self.xg, self.yg)
 
         # Interpolación de variables output de OF sobre la grilla regular
@@ -94,7 +94,7 @@ class Iso_Superficie(object):
         return sx, sy, sdz, ss
 
     # Genera un streamline desde el punto x0 y0 hacia adelante y atras
-    def _makeStreamline(self, x_semillas, y_semillas, dr, angulo):
+    def _makeStreamline(self, x_semillas, y_semillas, dr, angulo, d0):
         """
         Compute a streamline extending in both directions from the given point.
         """
@@ -112,8 +112,8 @@ class Iso_Superficie(object):
                     s0 = (y_semillas[0] - y0) * np.cos(np.radians(angulo))
                     t0 = - s0 * np.tan(np.radians(angulo))
 
-            xmin, xmax = self.meshXmin - 2*self.paso_grid, 2*self.meshXmax + 2*self.paso_grid
-            ymin, ymax = self.meshYmin - 2*self.paso_grid, 2*self.meshYmax + 2*self.paso_grid
+            xmin, xmax = self.meshXmin - d0 , self.meshXmax + d0
+            ymin, ymax = self.meshYmin - d0, self.meshYmax + d0
 
             sx, sy, sdz, ss = self._makeHalfStreamline(x0, y0, xmin, xmax, ymin, ymax, dr, s0, 1)  # forwards
             st = [t0] * len(sx)
@@ -123,7 +123,7 @@ class Iso_Superficie(object):
         return streamlines
 
     # Redefine interpoladores, luego de rotar las streamlines
-    def redef_interpoladores(self, streamlines):
+    def redef_interpoladores(self, streamlines, d0):
 
         nstream = len(streamlines)
         xs = []
@@ -139,13 +139,17 @@ class Iso_Superficie(object):
             dzs.extend(st[3])
             ts.extend(st[4])
 
-        self.SG = griddata((xs, ys), ss, (self.XG, self.YG), method='cubic')
-        self.TG = griddata((xs, ys), ts, (self.XG, self.YG), method='cubic')
-        self.DZG = griddata((xs, ys), dzs, (self.XG, self.YG), method='cubic')
+        self.xgng = np.linspace(self.meshXmin + d0, self.meshXmax - d0, self.npoiX)
+        self.ygng = np.linspace(self.meshYmin + d0, self.meshYmax - d0, self.npoiY)
+        self.XGNG, self.YGNG = np.meshgrid(self.xgng, self.ygng)
 
-        self._interp_s = RectBivariateSpline(self.xg, self.yg, self.SG.T)
-        self._interp_t = RectBivariateSpline(self.xg, self.yg, self.TG.T)
-        self._interp_dz = RectBivariateSpline(self.xg, self.yg, self.DZG.T)
+        self.SG = griddata((xs, ys), ss, (self.XGNG, self.YGNG), method='cubic')
+        self.TG = griddata((xs, ys), ts, (self.XGNG, self.YGNG), method='cubic')
+        self.DZG = griddata((xs, ys), dzs, (self.XGNG, self.YGNG), method='cubic')
+
+        self._interp_s = RectBivariateSpline(self.xgng, self.ygng, self.SG.T)
+        self._interp_t = RectBivariateSpline(self.xgng, self.ygng, self.TG.T)
+        self._interp_dz = RectBivariateSpline(self.xgng, self.ygng, self.DZG.T)
 
 
     def flujo_base_turbinas(self, lista_turbinas):
