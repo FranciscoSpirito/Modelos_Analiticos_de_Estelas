@@ -186,7 +186,7 @@ for ruta in rutas:
      isoSuperficies.append(iso_s)
 
 angulos = [0, 22.5, 45, 67.5, 90, 112.5, 135, 157.5, 180, 202.5, 225, 247.5, 270, 292.5, 315, 337.5]
-for iso_s, angulo in zip(isoSuperficies, angulos):
+"""for iso_s, angulo in zip(isoSuperficies, angulos):
      fig, axes = plt.subplots(2,2)
      fig.suptitle('angulo = '+ str(angulo))
      iso_s.new_grid(200)
@@ -218,5 +218,38 @@ for iso_s, angulo in zip(isoSuperficies, angulos):
      divider = make_axes_locatable(axes[1,1])
      cax = divider.append_axes('right', size='5%', pad=0.05)
      fig.colorbar(count, cax=cax, orientation='vertical')
-     plt.show()
+     plt.show()"""
 
+for iso_s, angulo in zip(isoSuperficies, angulos):
+     fig, axes = plt.subplots(2,2)
+     fig.suptitle('angulo = '+ str(angulo))
+     iso_s.new_grid(300, 90)
+
+     count = axes[0,0].contourf(iso_s.XG, iso_s.YG, iso_s.ZG, 10)
+     axes[0,0].set_title('Z')
+     divider = make_axes_locatable(axes[0,0])
+     cax = divider.append_axes('right', size='5%', pad=0.05)
+     fig.colorbar(count, cax=cax, orientation='vertical')
+
+     count = axes[0,1].contourf(iso_s.XG, iso_s.YG, iso_s.UG, 10)
+     axes[0,1].set_title('U')
+     divider = make_axes_locatable(axes[0,1])
+     cax = divider.append_axes('right', size='5%', pad=0.05)
+     fig.colorbar(count, cax=cax, orientation='vertical')
+     axes[0, 1].get_yaxis().set_visible(False)
+
+     count = axes[1,0].contourf(iso_s.XG, iso_s.YG, iso_s.VG, 10)
+     axes[1,0].set_title('V')
+     divider = make_axes_locatable(axes[1,0])
+     cax = divider.append_axes('right', size='5%', pad=0.05)
+     fig.colorbar(count, cax=cax, orientation='vertical')
+
+     count = axes[1,1].contourf(iso_s.XG, iso_s.YG, iso_s.WG, 10)
+     axes[1,1].set_title('W')
+     divider = make_axes_locatable(axes[1,1])
+     cax = divider.append_axes('right', size='5%', pad=0.05)
+     fig.colorbar(count, cax=cax, orientation='vertical')
+     axes[1, 1].get_yaxis().set_visible(False)
+
+     fig.tight_layout()
+     plt.show()

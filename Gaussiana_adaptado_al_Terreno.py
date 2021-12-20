@@ -28,18 +28,16 @@ class Gaussiana_adaptado_al_Terreno(Modelo):
             interseccion = (np.vstack((samp_l_int * rmax * -v0 / muv,
                                        samp_l_int * rmax * u0 / muv)).T + coord_xy).T
             s = iso_s._interp_s(coordenada.x, coordenada.y).item() - iso_s._interp_s(turbina_a_la_izquierda.coord.x, turbina_a_la_izquierda.coord.y).item()
-            centro_ldc = np.array((float(interseccion[0]), float(interseccion[1]),
-               iso_s._interp_z(interseccion[0], interseccion[1]).item()
-               + iso_s._interp_dz(interseccion[0], interseccion[1]).item()
-               - iso_s._interp_dz(turbina_a_la_izquierda.coord.x, turbina_a_la_izquierda.coord.y).item()
-               + turbina_a_la_izquierda.coord.z)).T
+            # Altura del piso en la interseccion + diferencia de z de la streamline + altura del hub ( coordz de la turbina - la altura del piso en esa turbina )
+            z_centro_ldc = iso_s._interp_z(interseccion[0], interseccion[1]).item() + iso_s._interp_dz(interseccion[0], interseccion[1]).item() - iso_s._interp_dz(turbina_a_la_izquierda.coord.x, turbina_a_la_izquierda.coord.y).item() + (turbina_a_la_izquierda.coord.z) - iso_s._interp_z(turbina_a_la_izquierda.coord.x, turbina_a_la_izquierda.coord.y).item()
+            centro_ldc = np.array([float(interseccion[0]), float(interseccion[1]), z_centro_ldc]).T
             r = np.sqrt((coordenada.x - centro_ldc[0]) ** 2 + (coordenada.y - centro_ldc[1]) ** 2 +
                         (coordenada.z - centro_ldc[2]) ** 2)
 
             sigma_n_divido_d0 = (self.k_estrella * (s / turbina_a_la_izquierda.d_0) + self.epsilon)
             c = 1 - np.sqrt(1 - (turbina_a_la_izquierda.c_T / (8 * (sigma_n_divido_d0 ** 2))))
-            ver_c = c * np.exp(- ((r / turbina_a_la_izquierda.d_0) ** 2) / (2 * (sigma_n_divido_d0 ** 2)))
-            return c * np.exp(- ((r / turbina_a_la_izquierda.d_0) ** 2) / (2 * (sigma_n_divido_d0 ** 2)))
+            ver_c = c * np.exp(- ((r / turbina_a_la_izquierda.d_0) ** 2) / (2 * (sigma_n_divido_d0 ** 2))).item()
+            return c * np.exp(- ((r / turbina_a_la_izquierda.d_0) ** 2) / (2 * (sigma_n_divido_d0 ** 2))).item()
 
         else:
             return 0

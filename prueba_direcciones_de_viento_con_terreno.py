@@ -11,22 +11,23 @@ from calcular_u_en_coord_con_terreno import calcular_u_con_terreno
 from calcular_potencia_del_parque_con_terreno import calcular_potencia_del_parque_con_terreno
 from load_txt_datos import cargar_datos
 
-ruta1  = r"C:\Users\chesp\Documents\Ingenieria Mecanica\Tesis\Modelos_Analiticos_de_Estelas\Datos_Rawson_sin_Turbinas\U_superficie_gondolas.Dir.00.00.U8.50.raw"
-ruta2  = r"C:\Users\chesp\Documents\Ingenieria Mecanica\Tesis\Modelos_Analiticos_de_Estelas\Datos_Rawson_sin_Turbinas\U_superficie_gondolas.Dir.22.50.U8.50.raw"
-ruta3  = r"C:\Users\chesp\Documents\Ingenieria Mecanica\Tesis\Modelos_Analiticos_de_Estelas\Datos_Rawson_sin_Turbinas\U_superficie_gondolas.Dir.45.00.U8.50.raw"
-ruta4  = r"C:\Users\chesp\Documents\Ingenieria Mecanica\Tesis\Modelos_Analiticos_de_Estelas\Datos_Rawson_sin_Turbinas\U_superficie_gondolas.Dir.67.50.U8.50.raw"
-ruta5  = r"C:\Users\chesp\Documents\Ingenieria Mecanica\Tesis\Modelos_Analiticos_de_Estelas\Datos_Rawson_sin_Turbinas\U_superficie_gondolas.Dir.90.00.U8.50.raw"
-ruta6  = r"C:\Users\chesp\Documents\Ingenieria Mecanica\Tesis\Modelos_Analiticos_de_Estelas\Datos_Rawson_sin_Turbinas\U_superficie_gondolas.Dir.112.50.U8.50.raw"
-ruta7  = r"C:\Users\chesp\Documents\Ingenieria Mecanica\Tesis\Modelos_Analiticos_de_Estelas\Datos_Rawson_sin_Turbinas\U_superficie_gondolas.Dir.135.00.U8.50.raw"
-ruta8  = r"C:\Users\chesp\Documents\Ingenieria Mecanica\Tesis\Modelos_Analiticos_de_Estelas\Datos_Rawson_sin_Turbinas\U_superficie_gondolas.Dir.157.50.U8.50.raw"
-ruta9  = r"C:\Users\chesp\Documents\Ingenieria Mecanica\Tesis\Modelos_Analiticos_de_Estelas\Datos_Rawson_sin_Turbinas\U_superficie_gondolas.Dir.180.00.U8.50.raw"
-ruta10  = r"C:\Users\chesp\Documents\Ingenieria Mecanica\Tesis\Modelos_Analiticos_de_Estelas\Datos_Rawson_sin_Turbinas\U_superficie_gondolas.Dir.202.50.U8.50.raw"
-ruta11 = r"C:\Users\chesp\Documents\Ingenieria Mecanica\Tesis\Modelos_Analiticos_de_Estelas\Datos_Rawson_sin_Turbinas\U_superficie_gondolas.Dir.225.00.U8.50.raw"
-ruta12  = r"C:\Users\chesp\Documents\Ingenieria Mecanica\Tesis\Modelos_Analiticos_de_Estelas\Datos_Rawson_sin_Turbinas\U_superficie_gondolas.Dir.247.50.U8.50.raw"
-ruta13  = r"C:\Users\chesp\Documents\Ingenieria Mecanica\Tesis\Modelos_Analiticos_de_Estelas\Datos_Rawson_sin_Turbinas\U_superficie_gondolas.Dir.270.00.U8.50.raw"
-ruta14  = r"C:\Users\chesp\Documents\Ingenieria Mecanica\Tesis\Modelos_Analiticos_de_Estelas\Datos_Rawson_sin_Turbinas\U_superficie_gondolas.Dir.292.50.U8.50.raw"
-ruta15  = r"C:\Users\chesp\Documents\Ingenieria Mecanica\Tesis\Modelos_Analiticos_de_Estelas\Datos_Rawson_sin_Turbinas\U_superficie_gondolas.Dir.315.00.U8.50.raw"
-ruta16  = r"C:\Users\chesp\Documents\Ingenieria Mecanica\Tesis\Modelos_Analiticos_de_Estelas\Datos_Rawson_sin_Turbinas\U_superficie_gondolas.Dir.337.50.U8.50.raw"
+ruta1  = r"C:\Users\chesp\Documents\Ingenieria Mecanica\Tesis\Modelos_Analiticos_de_Estelas\Datos_Rawson_sin_Turbinas\realizable\Datos\postProcessing.Dir0.00.U8.50\surfaces\U_superficie_gondolas.raw"
+ruta2  = r"C:\Users\chesp\Documents\Ingenieria Mecanica\Tesis\Modelos_Analiticos_de_Estelas\Datos_Rawson_sin_Turbinas\realizable\Datos\postProcessing.Dir22.50.U8.50\surfaces\U_superficie_gondolas.raw"
+ruta3 = r"C:\Users\chesp\Documents\Ingenieria Mecanica\Tesis\Modelos_Analiticos_de_Estelas\Datos_Rawson_sin_Turbinas\realizable\Datos\postProcessing.Dir45.00.U8.50\surfaces\U_superficie_gondolas.raw"
+ruta4 = r"C:\Users\chesp\Documents\Ingenieria Mecanica\Tesis\Modelos_Analiticos_de_Estelas\Datos_Rawson_sin_Turbinas\realizable\Datos\postProcessing.Dir67.50.U8.50\surfaces\U_superficie_gondolas.raw"
+ruta5 = r"C:\Users\chesp\Documents\Ingenieria Mecanica\Tesis\Modelos_Analiticos_de_Estelas\Datos_Rawson_sin_Turbinas\realizable\Datos\postProcessing.Dir90.00.U8.50\surfaces\U_superficie_gondolas.raw"
+ruta6 = r"C:\Users\chesp\Documents\Ingenieria Mecanica\Tesis\Modelos_Analiticos_de_Estelas\Datos_Rawson_sin_Turbinas\realizable\Datos\postProcessing.Dir112.50.U8.50\surfaces\U_superficie_gondolas.raw"
+ruta7 = r"C:\Users\chesp\Documents\Ingenieria Mecanica\Tesis\Modelos_Analiticos_de_Estelas\Datos_Rawson_sin_Turbinas\realizable\Datos\postProcessing.Dir135.00.U8.50\surfaces\U_superficie_gondolas.raw"
+ruta8 = r"C:\Users\chesp\Documents\Ingenieria Mecanica\Tesis\Modelos_Analiticos_de_Estelas\Datos_Rawson_sin_Turbinas\realizable\Datos\postProcessing.Dir157.50.U8.50\surfaces\U_superficie_gondolas.raw"
+ruta9 = r"C:\Users\chesp\Documents\Ingenieria Mecanica\Tesis\Modelos_Analiticos_de_Estelas\Datos_Rawson_sin_Turbinas\realizable\Datos\postProcessing.Dir180.00.U8.50\surfaces\U_superficie_gondolas.raw"
+ruta10 = r"C:\Users\chesp\Documents\Ingenieria Mecanica\Tesis\Modelos_Analiticos_de_Estelas\Datos_Rawson_sin_Turbinas\realizable\Datos\postProcessing.Dir202.50.U8.50\surfaces\U_superficie_gondolas.raw"
+ruta11 = r"C:\Users\chesp\Documents\Ingenieria Mecanica\Tesis\Modelos_Analiticos_de_Estelas\Datos_Rawson_sin_Turbinas\realizable\Datos\postProcessing.Dir225.00.U8.50\postProcessing\surfaces\U_superficie_gondolas.raw"
+ruta12 = r"C:\Users\chesp\Documents\Ingenieria Mecanica\Tesis\Modelos_Analiticos_de_Estelas\Datos_Rawson_sin_Turbinas\realizable\Datos\postProcessing.Dir247.50.U8.50\postProcessing\surfaces\U_superficie_gondolas.raw"
+ruta13 = r"C:\Users\chesp\Documents\Ingenieria Mecanica\Tesis\Modelos_Analiticos_de_Estelas\Datos_Rawson_sin_Turbinas\realizable\Datos\postProcessing.Dir270.00.U8.50\postProcessing\surfaces\U_superficie_gondolas.raw"
+ruta14 = r"C:\Users\chesp\Documents\Ingenieria Mecanica\Tesis\Modelos_Analiticos_de_Estelas\Datos_Rawson_sin_Turbinas\realizable\Datos\postProcessing.Dir292.50.U8.50\postProcessing\surfaces\U_superficie_gondolas.raw"
+ruta15 = r"C:\Users\chesp\Documents\Ingenieria Mecanica\Tesis\Modelos_Analiticos_de_Estelas\Datos_Rawson_sin_Turbinas\realizable\Datos\postProcessing.Dir315.00.U8.50\postProcessing\surfaces\U_superficie_gondolas.raw"
+ruta16 = r"C:\Users\chesp\Documents\Ingenieria Mecanica\Tesis\Modelos_Analiticos_de_Estelas\Datos_Rawson_sin_Turbinas\realizable\Datos\postProcessing.Dir337.50.U8.50\postProcessing\surfaces\U_superficie_gondolas.raw"
+
 rutas = [ruta1, ruta2, ruta3, ruta4, ruta5, ruta6, ruta7, ruta8, ruta9, ruta10, ruta11, ruta12, ruta13, ruta14, ruta15, ruta16]
 isoSuperficies = []
 for ruta in rutas:
@@ -41,7 +42,6 @@ for ruta in rutas:
      isoSuperficies.append(iso_s)
 
 angulos = [0, 22.5, 45, 67.5, 90, 112.5, 135, 157.5, 180, 202.5, 225, 247.5, 270, 292.5, 315, 337.5]
-# angulos = ["00.00", "22.50", "45.00", "67.50", "90.00", "112.50", "135.00", "157.50", "180.00", "202.50", "225.00", "247.50", "270.00", "292.50", "315.00"]
 potencia_del_parque = []
 
 # Carga las turbinas del parque
@@ -50,13 +50,6 @@ turbinas_list = cargar_datos('coordenadas_turbinas', ruta)
 d0 = turbinas_list[0].d_0
 
 for iso_s, angulo in zip(isoSuperficies, angulos):
-
-
-    # Carga datos desdes .raw o .txt e inicializa la clase Iso_Superficie
-    # ruta  = r"C:\Users\chesp\Documents\Ingenieria Mecanica\Tesis\Modelos_Analiticos_de_Estelas\Datos_Rawson_sin_Turbinas\U_superficie_gondolas.Dir."+str(angulo)+".U8.50.raw"
-    # xl, yl, zl, ul, vl, wl = cargar_datos('isosuperficie', ruta)
-    # x, y, z, u, v, w = np.array(xl), np.array(yl), np.array(zl), np.array(ul), np.array(vl), np.array(wl)
-    # iso_s = Iso_Superficie(x, y, z, u, v, w)
 
     gaussiana_adaptado_al_terreno = Gaussiana_adaptado_al_Terreno()
 
@@ -98,26 +91,48 @@ for iso_s, angulo in zip(isoSuperficies, angulos):
     potencia_de_cada_turbina_normalizada = []
 
     for turbina in parque_de_turbinas.turbinas:
-        if turbina.potencia == None:
+        if turbina.potencia is None:
             print(turbina.coord)
         potencia_de_cada_turbina_normalizada.append(turbina.potencia/potencia_mast)
     potencia = sum(potencia_de_cada_turbina_normalizada)
-    potencia_del_parque.append(potencia)
+    potencia_del_parque.append(potencia/43)
 
-    fig, axes = plt.subplots(1, 2)
-    # Ploteo posicion de las turbinas rotadas
-    for turbina in turbinas_list:
-        x = float(turbina.coord.x)
-        y = float(turbina.coord.y)
-        axes[0].plot(x, y, 'o')
-        axes[0].text(x * (1 + 0.01), y * (1 + 0.01), round(turbina.potencia/potencia_mast, 2), fontsize=6)
-    axes[0].set_title('Potencia')
-
-    for line in streamlines:
-        axes[1].plot(line[0], line[1], '.r')
-    axes[1].set_title('Streamlines')
-    fig.suptitle(angulo)
-    plt.show()
+    # fig, axes = plt.subplots(2, 2)
+    # # Ploteo Turbinas
+    # for turbina in turbinas_list:
+    #     x = float(turbina.coord.x)
+    #     y = float(turbina.coord.y)
+    #     axes[0][0].plot(x, y, 'o')
+    #     axes[0][0].text(x * (1 + 0.01), y + 100, round(np.linalg.norm(turbina.U_f_base), 2), fontsize=6)
+    # axes[0][0].set_title('Flujo Base')
+    # axes[0][0].set_xlim(1000, 6000)
+    # axes[0][0].set_ylim(800, 6000)
+    # for turbina in turbinas_list:
+    #     x = float(turbina.coord.x)
+    #     y = float(turbina.coord.y)
+    #     axes[0][1].plot(x, y, 'o')
+    #     axes[0][1].text(x *(1 +0.01), y + 100, round(turbina.potencia/potencia_mast, 2), fontsize=6)
+    # axes[0][1].set_title('Potencia')
+    # axes[0][1].set_xlim(1000, 6000)
+    # axes[0][1].set_ylim(800, 6000)
+    # for turbina in turbinas_list:
+    #     x = float(turbina.coord.x)
+    #     y = float(turbina.coord.y)
+    #     axes[1][0].plot(x, y, 'o')
+    #     axes[1][0].text(x * (1 + 0.01), y + 100, round(turbina.c_T, 2), fontsize=6)
+    # axes[1][0].set_title('CT')
+    # axes[1][0].set_xlim(1000, 6000)
+    # axes[1][0].set_ylim(800, 6000)
+    #
+    # for line in streamlines:
+    #     axes[1][1].plot(line[0], line[1], '.r')
+    # line = streamlines[0]
+    # axes[1][1].text(line[0][2], line[1][2], 'inicio')
+    # axes[1][1].text(line[0][len(line[0])-2], line[1][len(line[0])-2], 'final')
+    # axes[1][1].set_title('Streamlines')
+    # fig.suptitle(angulo)
+    # fig.tight_layout()
+    # plt.show()
 
     for turbina_resuelta in parque_de_turbinas.turbinas:
         turbina_resuelta.reiniciar_turbina()

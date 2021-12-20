@@ -139,17 +139,17 @@ class Iso_Superficie(object):
             dzs.extend(st[3])
             ts.extend(st[4])
 
-        self.xgng = np.linspace(self.meshXmin + d0, self.meshXmax - d0, self.npoiX)
-        self.ygng = np.linspace(self.meshYmin + d0, self.meshYmax - d0, self.npoiY)
-        self.XGNG, self.YGNG = np.meshgrid(self.xgng, self.ygng)
+        self.xng = np.linspace(self.meshXmin + d0, self.meshXmax - d0, self.npoiX)
+        self.yng = np.linspace(self.meshYmin + d0, self.meshYmax - d0, self.npoiY)
+        self.XNG, self.YNG = np.meshgrid(self.xng, self.yng)
 
-        self.SG = griddata((xs, ys), ss, (self.XGNG, self.YGNG), method='cubic')
-        self.TG = griddata((xs, ys), ts, (self.XGNG, self.YGNG), method='cubic')
-        self.DZG = griddata((xs, ys), dzs, (self.XGNG, self.YGNG), method='cubic')
+        self.SG = griddata((xs, ys), ss, (self.XNG, self.YNG), method='cubic')
+        self.TG = griddata((xs, ys), ts, (self.XNG, self.YNG), method='cubic')
+        self.DZG = griddata((xs, ys), dzs, (self.XNG, self.YNG), method='cubic')
 
-        self._interp_s = RectBivariateSpline(self.xgng, self.ygng, self.SG.T)
-        self._interp_t = RectBivariateSpline(self.xgng, self.ygng, self.TG.T)
-        self._interp_dz = RectBivariateSpline(self.xgng, self.ygng, self.DZG.T)
+        self._interp_s = RectBivariateSpline(self.xng, self.yng, self.SG.T)
+        self._interp_t = RectBivariateSpline(self.xng, self.yng, self.TG.T)
+        self._interp_dz = RectBivariateSpline(self.xng, self.yng, self.DZG.T)
 
 
     def flujo_base_turbinas(self, lista_turbinas):
