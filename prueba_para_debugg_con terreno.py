@@ -45,12 +45,8 @@ fig , axes = plt.subplots(1,2)
 gaussiana_adaptado_al_terreno = Gaussiana_adaptado_al_Terreno()
 
 # Define el tipo de perfil de velocidades cte o log
-u_inf = U_inf()
-u_inf.perfil = 'cte'
-
-z_mast = turbinas_list[0].coord.z
-# z_0 de la superficie
-z_0 = 0.01
+z_mast, z_0, perfil = turbinas_list[0].coord.z, 0.01, 'cte'
+u_inf = U_inf(z_mast, z_0, perfil)
 
 parque_de_turbinas = Parque_de_turbinas(turbinas_list, z_0, z_mast)
 
@@ -82,7 +78,7 @@ iso_s.flujo_base_turbinas(turbinas_list)
 
 # Calcula CT, CP, P de las turbinas
 # data_prueba = calcular_potencia_del_parque_con_terreno(gaussiana_adaptado_al_terreno, 'largest', parque_de_turbinas, u_inf, iso_s, lista_coord_normalizadas,lista_dAi_normalizados)
-data_prueba = calcular_u_con_terreno(gaussiana_adaptado_al_terreno, 'largest', coord, parque_de_turbinas, u_inf, iso_s, lista_coord_normalizadas,lista_dAi_normalizados)
+data_prueba = calcular_u_con_terreno(gaussiana_adaptado_al_terreno, 'Metodo_Largest', coord, parque_de_turbinas, u_inf, iso_s, lista_coord_normalizadas,lista_dAi_normalizados)
 print(data_prueba)
 # potencia nominal cuando la turbina trabaja con un viento de 8.2 m/s
 potencia_mast = 1800 * 1000

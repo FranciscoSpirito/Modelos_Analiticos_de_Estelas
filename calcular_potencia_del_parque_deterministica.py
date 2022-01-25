@@ -20,15 +20,12 @@ from Estela import Estela
 # estela: instancia que contiene el metodo de superposicion utilizado
 
 
-def calcular_u_en_coord_integral_deterministica(modelo_deficit, metodo_superposicion, coord, parque_de_turbinas, u_inf, lista_coord_normalizadas,lista_dAi_normalizados):
+def calcular_potencia_del_parque_integral_deterministica(modelo_deficit, metodo_superposicion, parque_de_turbinas, u_inf, lista_coord_normalizadas,lista_dAi_normalizados):
 
     parque_de_turbinas.ordenar_turbinas_de_izquierda_a_derecha()
-    turbinas_a_la_izquierda_de_coord = parque_de_turbinas.turbinas_a_la_izquierda_de_una_coord(coord)
-    # lista que guardara los deficits normalizados generados por todas las turbinas a la izquierda de coord
-    deficit_normalizado_en_coord = []
 
     # Loop para calculo de deficits en la coordenada generado por las turbinas aguas abajo
-    for turbina_selec in turbinas_a_la_izquierda_de_coord:
+    for turbina_selec in parque_de_turbinas.turbinas:
 
         turbina_selec.desnormalizar_coord_y_areas(lista_coord_normalizadas, lista_dAi_normalizados)
         turbinas_a_la_izquierda_de_turbina_selec = parque_de_turbinas.turbinas_a_la_izquierda_de_una_coord(turbina_selec.coord)
@@ -43,7 +40,6 @@ def calcular_u_en_coord_integral_deterministica(modelo_deficit, metodo_superposi
             turbina_virtual = Turbina(turbina_selec.d_0, Coord(np.array([turbina_selec.coord.x,turbina_selec.coord.y,turbina_selec.coord.z])))
             turbina_virtual.c_T = 0
             turbinas_a_la_izquierda_de_turbina_selec = [turbina_virtual]
-            u_inf.perfil_flujo_base(turbina_selec.coord)
             turbina_virtual.U_f_base = u_inf.u_perfil
 
         # Loop para calculo de deficits en la turbina_selec generado por las turbinas aguas abajo
@@ -64,14 +60,3 @@ def calcular_u_en_coord_integral_deterministica(modelo_deficit, metodo_superposi
         turbina_selec.calcular_c_T_Int_Det()
         turbina_selec.calcular_c_P_Int_Det()
         turbina_selec.calcular_P_Int_Det()
-
-        # calcula el deficit generado por la turbina seleccionada (ya tiene el c_T como para hacer esto) sobre la coordenada coord
-        deficit_normalizado_en_coord_contribucion_turbina_selec = modelo_deficit.evaluar_deficit_normalizado(turbina_selec, coord)
-        deficit_normalizado_en_coord.append(deficit_normalizado_en_coord_contribucion_turbina_selec)
-
-    # crea una instancia de Estela con los datos calculados sobre coord generados por las coordenadas a la izquierda
-    estela_sobre_coord = Estela(deficit_normalizado_en_coord, [coord], turbinas_a_la_izquierda_de_coord)
-    estela_sobre_coord.merge_deterministica(metodo_superposicion, u_inf)
-    u = estela_sobre_coord.vel_estela[0]
-
-    return u

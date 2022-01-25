@@ -36,7 +36,6 @@ class Gaussiana_adaptado_al_Terreno(Modelo):
 
             sigma_n_divido_d0 = (self.k_estrella * (s / turbina_a_la_izquierda.d_0) + self.epsilon)
             c = 1 - np.sqrt(1 - (turbina_a_la_izquierda.c_T / (8 * (sigma_n_divido_d0 ** 2))))
-            ver_c = c * np.exp(- ((r / turbina_a_la_izquierda.d_0) ** 2) / (2 * (sigma_n_divido_d0 ** 2))).item()
             return c * np.exp(- ((r / turbina_a_la_izquierda.d_0) ** 2) / (2 * (sigma_n_divido_d0 ** 2))).item()
 
         else:

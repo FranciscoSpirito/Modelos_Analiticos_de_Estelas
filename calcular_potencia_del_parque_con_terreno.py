@@ -21,6 +21,7 @@ from Iso_Superficie import Iso_Superficie
 # lista_dAi_normalizadas: areas de los diferenciales de un disco de radio 1 ubicado en el (0,0,0)
 # u_inf: instancia de U_inf, contiene la informacion del perfil de velocidades (log o cte)
 # u: viento en la coordenada coord al atravezar el parque con las condiciones de entrada definidas
+# estela: instancia que contiene el metodo de superposicion utilizado
 
 
 def calcular_potencia_del_parque_con_terreno(modelo_deficit, metodo_superposicion, parque_de_turbinas, u_inf, iso_s,
@@ -36,6 +37,7 @@ def calcular_potencia_del_parque_con_terreno(modelo_deficit, metodo_superposicio
 
     # Loop para calculo de deficits en la coordenada generado por las turbinas aguas abajo
     for turbina_selec in parque_de_turbinas.turbinas:
+
 
         turbina_selec.desnormalizar_coord_y_areas(lista_coord_normalizadas, lista_dAi_normalizados)
         turbinas_a_la_izquierda_de_turbina_selec = parque_de_turbinas.turbinas_a_la_izquierda_de_una_coord_con_terreno(turbina_selec.coord, iso_s)
@@ -57,6 +59,7 @@ def calcular_potencia_del_parque_con_terreno(modelo_deficit, metodo_superposicio
                 np.array([turbina_selec.coord.x, turbina_selec.coord.y, turbina_selec.coord.z])))
             turbina_virtual.c_T = 0
             turbina_virtual.t = turbina_selec.t
+            turbina_virtual.U_f_base  = turbina_selec.U_f_base
             turbinas_a_la_izquierda_de_turbina_selec = [turbina_virtual]
 
         # Loop para calculo de deficits en la turbina_selec generado por las turbinas aguas abajo
@@ -75,11 +78,11 @@ def calcular_potencia_del_parque_con_terreno(modelo_deficit, metodo_superposicio
 
 
         # crea una instancia de Estela con los datos calculados sobre las coordenadas aleatorias
-        estela_sobre_turbina_selec = Estela(arreglo_deficit, len(turbina_selec.lista_coord), cantidad_turbinas_izquierda_de_selec)
-        estela_sobre_turbina_selec.merge(metodo_superposicion)
+        estela_sobre_turbina_selec = Estela(arreglo_deficit, turbina_selec.lista_coord, turbinas_a_la_izquierda_de_turbina_selec)
+        estela_sobre_turbina_selec.merge_terreno(metodo_superposicion, iso_s)
+        turbina_selec.u_disco = estela_sobre_turbina_selec.vel_estela
 
         # Se calculan C_T C_P y Potencia de cada turbina
-        turbina_selec.u_adentro_disco_con_terreno(u_inf, estela_sobre_turbina_selec, parque_de_turbinas.z_mast, parque_de_turbinas.z_0)
         turbina_selec.calcular_c_T_Int_Det()
         turbina_selec.calcular_c_P_Int_Det()
         turbina_selec.calcular_P_Int_Det()

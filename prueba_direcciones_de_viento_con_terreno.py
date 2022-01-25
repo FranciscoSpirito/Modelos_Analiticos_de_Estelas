@@ -53,13 +53,8 @@ for iso_s, angulo in zip(isoSuperficies, angulos):
 
     gaussiana_adaptado_al_terreno = Gaussiana_adaptado_al_Terreno()
 
-    # Define el tipo de perfil de velocidades cte o log
-    u_inf = U_inf()
-    u_inf.perfil = 'cte'
-
-    z_mast = turbinas_list[0].coord.z
-    # z_0 de la superficie
-    z_0 = 0.01
+    z_mast, z_0, perfil = turbinas_list[0].coord.z, 0.01, 'cte'
+    u_inf = U_inf(z_mast, z_0, perfil)
 
     parque_de_turbinas = Parque_de_turbinas(turbinas_list, z_0, z_mast)
 
@@ -83,7 +78,7 @@ for iso_s, angulo in zip(isoSuperficies, angulos):
     iso_s.flujo_base_turbinas(turbinas_list)
 
     # Calcula CT, CP, P de las turbinas
-    data_prueba = calcular_potencia_del_parque_con_terreno(gaussiana_adaptado_al_terreno, 'largest', parque_de_turbinas, u_inf, iso_s, lista_coord_normalizadas,lista_dAi_normalizados)
+    data_prueba = calcular_potencia_del_parque_con_terreno(gaussiana_adaptado_al_terreno, 'Metodo_CTerreno', parque_de_turbinas, u_inf, iso_s, lista_coord_normalizadas,lista_dAi_normalizados)
 
     # potencia nominal cuando la turbina trabaja con un viento de 8.2 m/s
     potencia_mast = 1800*1000
@@ -97,42 +92,42 @@ for iso_s, angulo in zip(isoSuperficies, angulos):
     potencia = sum(potencia_de_cada_turbina_normalizada)
     potencia_del_parque.append(potencia/43)
 
-    # fig, axes = plt.subplots(2, 2)
-    # # Ploteo Turbinas
-    # for turbina in turbinas_list:
-    #     x = float(turbina.coord.x)
-    #     y = float(turbina.coord.y)
-    #     axes[0][0].plot(x, y, 'o')
-    #     axes[0][0].text(x * (1 + 0.01), y + 100, round(np.linalg.norm(turbina.U_f_base), 2), fontsize=6)
-    # axes[0][0].set_title('Flujo Base')
-    # axes[0][0].set_xlim(1000, 6000)
-    # axes[0][0].set_ylim(800, 6000)
-    # for turbina in turbinas_list:
-    #     x = float(turbina.coord.x)
-    #     y = float(turbina.coord.y)
-    #     axes[0][1].plot(x, y, 'o')
-    #     axes[0][1].text(x *(1 +0.01), y + 100, round(turbina.potencia/potencia_mast, 2), fontsize=6)
-    # axes[0][1].set_title('Potencia')
-    # axes[0][1].set_xlim(1000, 6000)
-    # axes[0][1].set_ylim(800, 6000)
-    # for turbina in turbinas_list:
-    #     x = float(turbina.coord.x)
-    #     y = float(turbina.coord.y)
-    #     axes[1][0].plot(x, y, 'o')
-    #     axes[1][0].text(x * (1 + 0.01), y + 100, round(turbina.c_T, 2), fontsize=6)
-    # axes[1][0].set_title('CT')
-    # axes[1][0].set_xlim(1000, 6000)
-    # axes[1][0].set_ylim(800, 6000)
-    #
-    # for line in streamlines:
-    #     axes[1][1].plot(line[0], line[1], '.r')
-    # line = streamlines[0]
-    # axes[1][1].text(line[0][2], line[1][2], 'inicio')
-    # axes[1][1].text(line[0][len(line[0])-2], line[1][len(line[0])-2], 'final')
-    # axes[1][1].set_title('Streamlines')
-    # fig.suptitle(angulo)
-    # fig.tight_layout()
-    # plt.show()
+    fig, axes = plt.subplots(2, 2)
+    # Ploteo Turbinas
+    for turbina in turbinas_list:
+        x = float(turbina.coord.x)
+        y = float(turbina.coord.y)
+        axes[0][0].plot(x, y, 'o')
+        axes[0][0].text(x * (1 + 0.01), y + 100, round(np.linalg.norm(turbina.U_f_base), 2), fontsize=6)
+    axes[0][0].set_title('Flujo Base')
+    axes[0][0].set_xlim(1000, 6000)
+    axes[0][0].set_ylim(800, 6000)
+    for turbina in turbinas_list:
+        x = float(turbina.coord.x)
+        y = float(turbina.coord.y)
+        axes[0][1].plot(x, y, 'o')
+        axes[0][1].text(x *(1 +0.01), y + 100, round(turbina.potencia/potencia_mast, 2), fontsize=6)
+    axes[0][1].set_title('Potencia')
+    axes[0][1].set_xlim(1000, 6000)
+    axes[0][1].set_ylim(800, 6000)
+    for turbina in turbinas_list:
+        x = float(turbina.coord.x)
+        y = float(turbina.coord.y)
+        axes[1][0].plot(x, y, 'o')
+        axes[1][0].text(x * (1 + 0.01), y + 100, round(turbina.c_T, 2), fontsize=6)
+    axes[1][0].set_title('CT')
+    axes[1][0].set_xlim(1000, 6000)
+    axes[1][0].set_ylim(800, 6000)
+
+    for line in streamlines:
+        axes[1][1].plot(line[0], line[1], '.r')
+    line = streamlines[0]
+    axes[1][1].text(line[0][2], line[1][2], 'inicio')
+    axes[1][1].text(line[0][len(line[0])-2], line[1][len(line[0])-2], 'final')
+    axes[1][1].set_title('Streamlines')
+    fig.suptitle(angulo)
+    fig.tight_layout()
+    plt.show()
 
     for turbina_resuelta in parque_de_turbinas.turbinas:
         turbina_resuelta.reiniciar_turbina()

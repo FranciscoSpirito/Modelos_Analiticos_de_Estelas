@@ -246,5 +246,12 @@ class Iso_Superficie(object):
                 streamline[5][i] = vector_vel_rotado.getA1()[1]
         return streamlines
 
+    def calc_mod(self, coord):
+
+        u = self._interp_u(coord.x, coord.y).item()
+        v = self._interp_v(coord.x, coord.y).item()
+        w = self._interp_w(coord.x, coord.y).item()
+
+        return np.linalg.norm([u,v,w])
 
 

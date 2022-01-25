@@ -21,6 +21,7 @@ from Iso_Superficie import Iso_Superficie
 # lista_dAi_normalizadas: areas de los diferenciales de un disco de radio 1 ubicado en el (0,0,0)
 # u_inf: instancia de U_inf, contiene la informacion del perfil de velocidades (log o cte)
 # u: viento en la coordenada coord al atravezar el parque con las condiciones de entrada definidas
+# estela: instancia que contiene el metodo de superposicion utilizado
 
 
 def calcular_u_con_terreno(modelo_deficit, metodo_superposicion, coord, parque_de_turbinas, u_inf, iso_s,
@@ -39,7 +40,6 @@ def calcular_u_con_terreno(modelo_deficit, metodo_superposicion, coord, parque_d
 
     #  Calculo de puntos de la zona influyente cerca de la coord (samp_xy_coord)
     u_coord, v_coord, w_coord = iso_s._interp_u(coord.x, coord.y).item(), iso_s._interp_v(coord.x, coord.y).item(), iso_s._interp_w(coord.x, coord.y).item()
-    u_f_base = np.array([u_coord, v_coord, w_coord])
     muv_coord = np.sqrt(u_coord ** 2 + v_coord ** 2)
     samp_xy_coord = (np.vstack((samp_l * rmax * -v_coord / muv_coord, samp_l * rmax * u_coord / muv_coord)).T + (coord.x, coord.y)).T
 
@@ -66,6 +66,7 @@ def calcular_u_con_terreno(modelo_deficit, metodo_superposicion, coord, parque_d
                 np.array([turbina_selec.coord.x, turbina_selec.coord.y, turbina_selec.coord.z])))
             turbina_virtual.c_T = 0
             turbina_virtual.t = turbina_selec.t
+            turbina_virtual.U_f_base  = turbina_selec.U_f_base
             turbinas_a_la_izquierda_de_turbina_selec = [turbina_virtual]
 
         # Loop para calculo de deficits en la turbina_selec generado por las turbinas aguas abajo
@@ -84,11 +85,11 @@ def calcular_u_con_terreno(modelo_deficit, metodo_superposicion, coord, parque_d
 
 
         # crea una instancia de Estela con los datos calculados sobre las coordenadas aleatorias
-        estela_sobre_turbina_selec = Estela(arreglo_deficit, len(turbina_selec.lista_coord), cantidad_turbinas_izquierda_de_selec)
-        estela_sobre_turbina_selec.merge(metodo_superposicion)
+        estela_sobre_turbina_selec = Estela(arreglo_deficit, turbina_selec.lista_coord, turbinas_a_la_izquierda_de_turbina_selec)
+        estela_sobre_turbina_selec.merge_terreno(metodo_superposicion, iso_s)
+        turbina_selec.u_disco = estela_sobre_turbina_selec.vel_estela
 
         # Se calculan C_T C_P y Potencia de cada turbina
-        turbina_selec.u_adentro_disco_con_terreno(u_inf, estela_sobre_turbina_selec, parque_de_turbinas.z_mast, parque_de_turbinas.z_0)
         turbina_selec.calcular_c_T_Int_Det()
         turbina_selec.calcular_c_P_Int_Det()
         turbina_selec.calcular_P_Int_Det()
@@ -105,12 +106,9 @@ def calcular_u_con_terreno(modelo_deficit, metodo_superposicion, coord, parque_d
 
     # crea una instancia de Estela con los datos calculados sobre coord generados por las coordenadas a
     # la izquierda
-    estela_sobre_coord = Estela(deficit_normalizado_en_coord, 1, len(turbinas_a_la_izquierda_de_coord))
-    estela_sobre_coord.merge(metodo_superposicion)
+    estela_sobre_coord = Estela(deficit_normalizado_en_coord, [coord], turbinas_a_la_izquierda_de_coord)
+    estela_sobre_coord.merge_terreno(metodo_superposicion, iso_s)
 
     # Calculo de velocidad en coord
-    u_inf.coord = coord
-    u_inf.u_mast = np.linalg.norm(u_f_base)
-    u_inf.perfil_flujo_base(parque_de_turbinas.z_mast, parque_de_turbinas.z_0)
-    u = u_inf.u_perfil * (1 - estela_sobre_coord.mergeada[0])
+    u = float(estela_sobre_coord.vel_estela)
     return u
