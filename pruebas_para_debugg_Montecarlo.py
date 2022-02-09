@@ -117,3 +117,4 @@ for turbina in turbinas_list:
     potencia_de_cada_turbina_normalizada.append(float(turbina.potencia)/potencia_mast)
 
 print(sum(potencia_de_cada_turbina_normalizada))
+print(potencia_de_cada_turbina_normalizada)

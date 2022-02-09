@@ -24,7 +24,7 @@ from Iso_Superficie import Iso_Superficie
 # estela: instancia que contiene el metodo de superposicion utilizado
 
 
-def calcular_u_con_terreno(modelo_deficit, metodo_superposicion, coord, parque_de_turbinas, u_inf, iso_s,
+def calcular_u_con_terreno(modelo_deficit, metodo_superposicion, coord, parque_de_turbinas, iso_s,
                                                 lista_coord_normalizadas, lista_dAi_normalizados):
 
     parque_de_turbinas.ordenar_turbinas_de_izquierda_a_derecha_con_terreno()

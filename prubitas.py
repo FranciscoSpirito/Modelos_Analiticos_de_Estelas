@@ -7,6 +7,8 @@ from Jensen import Jensen
 from Frandsen import Frandsen
 from Gaussiana import Gaussiana
 from Turbina_Rawson import Turbina_Rawson
+from Iso_Superficie import Iso_Superficie
+from load_txt_datos import cargar_datos
 
 """Grafico de CT con interpolacion 1D"""
 # U_tabulado = np.array([3.97553683, 4.9669611, 5.95972269, 6.95196727,
@@ -51,16 +53,51 @@ from Turbina_Rawson import Turbina_Rawson
 
 
 """Probando Modelos de deficit"""
-frandsen = Frandsen()
-gaussiana = Gaussiana()
-ct_array = np.linspace(0,1,10)
-turbina = Turbina_Rawson(Coord(np.array([(100),(100),100])))
-coordenada = Coord(np.array([(150),(100),100]))
-deficit_array = np.zeros(len(ct_array))
-i=0
-for CT in ct_array:
-    turbina.c_T = CT
-    deficit_array[i] = gaussiana.evaluar_deficit_normalizado(turbina,coordenada)
-    i += 1
-plt.plot(ct_array,deficit_array)
-plt.show()
+# frandsen = Frandsen()
+# gaussiana = Gaussiana()
+# ct_array = np.linspace(0,1,10)
+# turbina = Turbina_Rawson(Coord(np.array([(100),(100),100])))
+# coordenada = Coord(np.array([(150),(100),100]))
+# deficit_array = np.zeros(len(ct_array))
+# i=0
+# for CT in ct_array:
+#     turbina.c_T = CT
+#     deficit_array[i] = gaussiana.evaluar_deficit_normalizado(turbina,coordenada)
+#     i += 1
+# plt.plot(ct_array,deficit_array)
+# plt.show()
+
+# a = np.array([[1, 2], [3, 4]])
+# print(a)
+# b = np.array([1, 2])
+# print(b)
+# c = np.dot(a,b)
+# print(c)
+
+
+#
+# ruta = r"C:\Users\chesp\Documents\Ingenieria Mecanica\Tesis\Modelos_Analiticos_de_Estelas\Coordenadas_de_turbinas\Coordenadas_turbinas_parque_Rawson.txt"
+# turbinas_list = cargar_datos('coordenadas_turbinas', ruta)
+#
+# for turbina in turbinas_list:
+#     x = float(turbina.coord.x)
+#     y = float(turbina.coord.y)
+#     plt.plot(x,y, 'o')
+#     plt.text(x, y * (1 + 0.01),'x = ' + str(int(x)) + ' y = ' + str(int(y)), fontsize=6)
+#
+# plt.show()
+
+
+meshXmin, meshXmax, npoiX = 1000, 4000, 10
+meshYmin, meshYmax, npoiY = 1000, 4000, 10
+xg = np.linspace(meshXmin, meshXmax, npoiX)
+yg = np.linspace(meshYmin, meshYmax, npoiY)
+XG, YG = np.meshgrid(xg, yg)
+positions = np.vstack([XG.ravel(), YG.ravel()])
+coordenadas = []
+for i in range(len(positions[0])):
+    x = positions[:,i][0]
+    y = positions[:,i][1]
+    cooord = Coord([x, y, 0])
+    coordenadas.append(cooord)
+print('hola')

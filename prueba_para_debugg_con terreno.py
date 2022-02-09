@@ -78,7 +78,7 @@ iso_s.flujo_base_turbinas(turbinas_list)
 
 # Calcula CT, CP, P de las turbinas
 # data_prueba = calcular_potencia_del_parque_con_terreno(gaussiana_adaptado_al_terreno, 'largest', parque_de_turbinas, u_inf, iso_s, lista_coord_normalizadas,lista_dAi_normalizados)
-data_prueba = calcular_u_con_terreno(gaussiana_adaptado_al_terreno, 'Metodo_Largest', coord, parque_de_turbinas, u_inf, iso_s, lista_coord_normalizadas,lista_dAi_normalizados)
+data_prueba = calcular_u_con_terreno(gaussiana_adaptado_al_terreno, 'Metodo_Largest', coord, parque_de_turbinas, iso_s, lista_coord_normalizadas,lista_dAi_normalizados)
 print(data_prueba)
 # potencia nominal cuando la turbina trabaja con un viento de 8.2 m/s
 potencia_mast = 1800 * 1000

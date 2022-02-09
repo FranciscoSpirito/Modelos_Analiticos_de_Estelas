@@ -156,22 +156,23 @@ from mpl_toolkits.axes_grid1 import make_axes_locatable
     # plt.show()
 
 """Con datos de CFD"""
-ruta1  = r"C:\Users\chesp\Documents\Ingenieria Mecanica\Tesis\Modelos_Analiticos_de_Estelas\Datos_Rawson_sin_Turbinas\U_superficie_gondolas.Dir.00.00.U8.50.raw"
-ruta2  = r"C:\Users\chesp\Documents\Ingenieria Mecanica\Tesis\Modelos_Analiticos_de_Estelas\Datos_Rawson_sin_Turbinas\U_superficie_gondolas.Dir.22.50.U8.50.raw"
-ruta3  = r"C:\Users\chesp\Documents\Ingenieria Mecanica\Tesis\Modelos_Analiticos_de_Estelas\Datos_Rawson_sin_Turbinas\U_superficie_gondolas.Dir.45.00.U8.50.raw"
-ruta4  = r"C:\Users\chesp\Documents\Ingenieria Mecanica\Tesis\Modelos_Analiticos_de_Estelas\Datos_Rawson_sin_Turbinas\U_superficie_gondolas.Dir.67.50.U8.50.raw"
-ruta5  = r"C:\Users\chesp\Documents\Ingenieria Mecanica\Tesis\Modelos_Analiticos_de_Estelas\Datos_Rawson_sin_Turbinas\U_superficie_gondolas.Dir.90.00.U8.50.raw"
-ruta6  = r"C:\Users\chesp\Documents\Ingenieria Mecanica\Tesis\Modelos_Analiticos_de_Estelas\Datos_Rawson_sin_Turbinas\U_superficie_gondolas.Dir.112.50.U8.50.raw"
-ruta7  = r"C:\Users\chesp\Documents\Ingenieria Mecanica\Tesis\Modelos_Analiticos_de_Estelas\Datos_Rawson_sin_Turbinas\U_superficie_gondolas.Dir.135.00.U8.50.raw"
-ruta8  = r"C:\Users\chesp\Documents\Ingenieria Mecanica\Tesis\Modelos_Analiticos_de_Estelas\Datos_Rawson_sin_Turbinas\U_superficie_gondolas.Dir.157.50.U8.50.raw"
-ruta9  = r"C:\Users\chesp\Documents\Ingenieria Mecanica\Tesis\Modelos_Analiticos_de_Estelas\Datos_Rawson_sin_Turbinas\U_superficie_gondolas.Dir.180.00.U8.50.raw"
-ruta10  = r"C:\Users\chesp\Documents\Ingenieria Mecanica\Tesis\Modelos_Analiticos_de_Estelas\Datos_Rawson_sin_Turbinas\U_superficie_gondolas.Dir.202.50.U8.50.raw"
-ruta11 = r"C:\Users\chesp\Documents\Ingenieria Mecanica\Tesis\Modelos_Analiticos_de_Estelas\Datos_Rawson_sin_Turbinas\U_superficie_gondolas.Dir.225.00.U8.50.raw"
-ruta12  = r"C:\Users\chesp\Documents\Ingenieria Mecanica\Tesis\Modelos_Analiticos_de_Estelas\Datos_Rawson_sin_Turbinas\U_superficie_gondolas.Dir.247.50.U8.50.raw"
-ruta13  = r"C:\Users\chesp\Documents\Ingenieria Mecanica\Tesis\Modelos_Analiticos_de_Estelas\Datos_Rawson_sin_Turbinas\U_superficie_gondolas.Dir.270.00.U8.50.raw"
-ruta14  = r"C:\Users\chesp\Documents\Ingenieria Mecanica\Tesis\Modelos_Analiticos_de_Estelas\Datos_Rawson_sin_Turbinas\U_superficie_gondolas.Dir.292.50.U8.50.raw"
-ruta15  = r"C:\Users\chesp\Documents\Ingenieria Mecanica\Tesis\Modelos_Analiticos_de_Estelas\Datos_Rawson_sin_Turbinas\U_superficie_gondolas.Dir.315.00.U8.50.raw"
-ruta16  = r"C:\Users\chesp\Documents\Ingenieria Mecanica\Tesis\Modelos_Analiticos_de_Estelas\Datos_Rawson_sin_Turbinas\U_superficie_gondolas.Dir.337.50.U8.50.raw"
+
+ruta1  = r"C:\Users\chesp\Documents\Ingenieria Mecanica\Tesis\Modelos_Analiticos_de_Estelas\Datos_Rawson_sin_Turbinas\realizable\Datos\postProcessing.Dir0.00.U8.50\surfaces\U_superficie_gondolas.raw"
+ruta2  = r"C:\Users\chesp\Documents\Ingenieria Mecanica\Tesis\Modelos_Analiticos_de_Estelas\Datos_Rawson_sin_Turbinas\realizable\Datos\postProcessing.Dir22.50.U8.50\surfaces\U_superficie_gondolas.raw"
+ruta3 = r"C:\Users\chesp\Documents\Ingenieria Mecanica\Tesis\Modelos_Analiticos_de_Estelas\Datos_Rawson_sin_Turbinas\realizable\Datos\postProcessing.Dir45.00.U8.50\surfaces\U_superficie_gondolas.raw"
+ruta4 = r"C:\Users\chesp\Documents\Ingenieria Mecanica\Tesis\Modelos_Analiticos_de_Estelas\Datos_Rawson_sin_Turbinas\realizable\Datos\postProcessing.Dir67.50.U8.50\surfaces\U_superficie_gondolas.raw"
+ruta5 = r"C:\Users\chesp\Documents\Ingenieria Mecanica\Tesis\Modelos_Analiticos_de_Estelas\Datos_Rawson_sin_Turbinas\realizable\Datos\postProcessing.Dir90.00.U8.50\surfaces\U_superficie_gondolas.raw"
+ruta6 = r"C:\Users\chesp\Documents\Ingenieria Mecanica\Tesis\Modelos_Analiticos_de_Estelas\Datos_Rawson_sin_Turbinas\realizable\Datos\postProcessing.Dir112.50.U8.50\surfaces\U_superficie_gondolas.raw"
+ruta7 = r"C:\Users\chesp\Documents\Ingenieria Mecanica\Tesis\Modelos_Analiticos_de_Estelas\Datos_Rawson_sin_Turbinas\realizable\Datos\postProcessing.Dir135.00.U8.50\surfaces\U_superficie_gondolas.raw"
+ruta8 = r"C:\Users\chesp\Documents\Ingenieria Mecanica\Tesis\Modelos_Analiticos_de_Estelas\Datos_Rawson_sin_Turbinas\realizable\Datos\postProcessing.Dir157.50.U8.50\surfaces\U_superficie_gondolas.raw"
+ruta9 = r"C:\Users\chesp\Documents\Ingenieria Mecanica\Tesis\Modelos_Analiticos_de_Estelas\Datos_Rawson_sin_Turbinas\realizable\Datos\postProcessing.Dir180.00.U8.50\surfaces\U_superficie_gondolas.raw"
+ruta10 = r"C:\Users\chesp\Documents\Ingenieria Mecanica\Tesis\Modelos_Analiticos_de_Estelas\Datos_Rawson_sin_Turbinas\realizable\Datos\postProcessing.Dir202.50.U8.50\surfaces\U_superficie_gondolas.raw"
+ruta11 = r"C:\Users\chesp\Documents\Ingenieria Mecanica\Tesis\Modelos_Analiticos_de_Estelas\Datos_Rawson_sin_Turbinas\realizable\Datos\postProcessing.Dir225.00.U8.50\postProcessing\surfaces\U_superficie_gondolas.raw"
+ruta12 = r"C:\Users\chesp\Documents\Ingenieria Mecanica\Tesis\Modelos_Analiticos_de_Estelas\Datos_Rawson_sin_Turbinas\realizable\Datos\postProcessing.Dir247.50.U8.50\postProcessing\surfaces\U_superficie_gondolas.raw"
+ruta13 = r"C:\Users\chesp\Documents\Ingenieria Mecanica\Tesis\Modelos_Analiticos_de_Estelas\Datos_Rawson_sin_Turbinas\realizable\Datos\postProcessing.Dir270.00.U8.50\postProcessing\surfaces\U_superficie_gondolas.raw"
+ruta14 = r"C:\Users\chesp\Documents\Ingenieria Mecanica\Tesis\Modelos_Analiticos_de_Estelas\Datos_Rawson_sin_Turbinas\realizable\Datos\postProcessing.Dir292.50.U8.50\postProcessing\surfaces\U_superficie_gondolas.raw"
+ruta15 = r"C:\Users\chesp\Documents\Ingenieria Mecanica\Tesis\Modelos_Analiticos_de_Estelas\Datos_Rawson_sin_Turbinas\realizable\Datos\postProcessing.Dir315.00.U8.50\postProcessing\surfaces\U_superficie_gondolas.raw"
+ruta16 = r"C:\Users\chesp\Documents\Ingenieria Mecanica\Tesis\Modelos_Analiticos_de_Estelas\Datos_Rawson_sin_Turbinas\realizable\Datos\postProcessing.Dir337.50.U8.50\postProcessing\surfaces\U_superficie_gondolas.raw"
 rutas = [ruta1, ruta2, ruta3, ruta4, ruta5, ruta6, ruta7, ruta8, ruta9, ruta10, ruta11, ruta12, ruta13, ruta14, ruta15, ruta16]
 isoSuperficies = []
 for ruta in rutas:
@@ -186,10 +187,10 @@ for ruta in rutas:
      isoSuperficies.append(iso_s)
 
 angulos = [0, 22.5, 45, 67.5, 90, 112.5, 135, 157.5, 180, 202.5, 225, 247.5, 270, 292.5, 315, 337.5]
-"""for iso_s, angulo in zip(isoSuperficies, angulos):
+for iso_s, angulo in zip(isoSuperficies, angulos):
      fig, axes = plt.subplots(2,2)
      fig.suptitle('angulo = '+ str(angulo))
-     iso_s.new_grid(200)
+     iso_s.new_grid(200, 90)
      x_semillas, y_semillas = iso_s.gen_semillas(angulo, 20)
 
      axes[0,0].plot(x_semillas, y_semillas, 'o')
@@ -197,15 +198,15 @@ angulos = [0, 22.5, 45, 67.5, 90, 112.5, 135, 157.5, 180, 202.5, 225, 247.5, 270
      axes[0,0].set_xlim(iso_s.meshXmin-100, iso_s.meshXmax+100)
      axes[0,0].set_ylim(iso_s.meshYmin-100, iso_s.meshYmax+100)
 
-     streamlines = iso_s._makeStreamline(x_semillas, y_semillas, 50, angulo)
+     streamlines = iso_s._makeStreamline(x_semillas, y_semillas, 50, angulo, 90)
      for line in streamlines:
           axes[0,1].plot(line[0], line[1], '.r')
      axes[0,1].set_title('Streamlines')
      line_prueba = streamlines[2]
-     axes[0,1].plot(line_prueba[0][3], line_prueba[1][3], 'y')
-     axes[0,1].plot(line_prueba[0][len(line_prueba[0])-3], line_prueba[1][len(line_prueba[0])-3], 'k')
+     axes[0,1].plot(line_prueba[0][3], line_prueba[1][3], 'oy')
+     axes[0,1].plot(line_prueba[0][len(line_prueba[0])-3], line_prueba[1][len(line_prueba[0])-3], 'ok')
 
-     iso_s.redef_interpoladores(streamlines)
+     iso_s.redef_interpoladores(streamlines, 90)
      count = axes[1,0].contourf(iso_s.XG, iso_s.YG, iso_s.SG, 10)
      axes[1,0].set_title('S')
      divider = make_axes_locatable(axes[1,0])
@@ -218,8 +219,8 @@ angulos = [0, 22.5, 45, 67.5, 90, 112.5, 135, 157.5, 180, 202.5, 225, 247.5, 270
      divider = make_axes_locatable(axes[1,1])
      cax = divider.append_axes('right', size='5%', pad=0.05)
      fig.colorbar(count, cax=cax, orientation='vertical')
-     plt.show()"""
-
+     plt.show()
+"""
 for iso_s, angulo in zip(isoSuperficies, angulos):
      fig, axes = plt.subplots(2,2)
      fig.suptitle('angulo = '+ str(angulo))
@@ -253,3 +254,4 @@ for iso_s, angulo in zip(isoSuperficies, angulos):
 
      fig.tight_layout()
      plt.show()
+"""

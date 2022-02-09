@@ -71,7 +71,7 @@ coord = Coord(np.array([x_o, y_o, z_o]))
 # parque_de_turbinas.rotar(angulo)
 # data_prueba = calcular_u_en_coord_integral_deterministica(gaussiana, 'Metodo_D', coord, parque_de_turbinas, u_inf, lista_coord_normalizadas,lista_dAi_normalizados)
 # print(data_prueba)
-data_prueba = calcular_potencia_del_parque_integral_deterministica(gaussiana, 'Metodo_D', parque_de_turbinas, u_inf, lista_coord_normalizadas,lista_dAi_normalizados)
+data_prueba = calcular_potencia_del_parque_integral_deterministica(gaussiana, 'Metodo_Largest', parque_de_turbinas, u_inf, lista_coord_normalizadas,lista_dAi_normalizados)
 # potencia nominal cuando la turbina trabaja con un viento de 8.2 m/s
 potencia_mast = 949.027296358*1000
 
