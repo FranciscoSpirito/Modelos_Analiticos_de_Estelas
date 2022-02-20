@@ -32,7 +32,7 @@ D = 90
 ruta = r"C:\Users\chesp\Documents\Ingenieria Mecanica\Tesis\Modelos_Analiticos_de_Estelas\Coordenadas_de_turbinas\Coordenadas_turbinas_parque_Rawson.txt"
 turbinas_list = cargar_datos('coordenadas_turbinas', ruta)
 
-perfil = 'log'
+perfil = 'cte'
 z_0 = 0.01
 z_mast = 180
 u_inf = U_inf(z_mast, z_0, perfil)
@@ -40,26 +40,17 @@ u_inf.u_mast = 8.2
 coord_u = Coord([0,0,180])
 u_inf.perfil_flujo_base(coord_u)
 parque_de_turbinas = Parque_de_turbinas(turbinas_list, z_0, z_mast)
-i=1
-for turbina in parque_de_turbinas.turbinas:
-    plt.plot(turbina.coord.x, turbina.coord.y, 'o')
-    plt.text(turbina.coord.x, turbina.coord.y, i)
-    i+=1
-plt.show()
-parque_de_turbinas.rotar(45)
-i=1
-for turbina in parque_de_turbinas.turbinas:
-    plt.plot(turbina.coord.x, turbina.coord.y, 'o')
-    plt.text(turbina.coord.x, turbina.coord.y, i)
-    i += 1
-plt.show()
+
+# i=1
+# for turbina in parque_de_turbinas.turbinas:
+#     plt.plot(turbina.coord.x, turbina.coord.y, 'o')
+#     plt.text(turbina.coord.x, turbina.coord.y, i)
+#     i+=1
+# plt.show()
 
 cantidad_de_puntos = 5
 espesor = turbinas_list[0].definicion_de_espesor(cantidad_de_puntos)
 lista_coord_normalizadas, lista_dAi_normalizados = turbinas_list[0].coordenadas_y_areas_normalizadas(cantidad_de_puntos, espesor)
-
-
-
 
 x_o = 6000
 y_o = 0
@@ -67,13 +58,11 @@ z_o = 180
 
 coord = Coord(np.array([x_o, y_o, z_o]))
 
-# angulo = 90
-# parque_de_turbinas.rotar(angulo)
-# data_prueba = calcular_u_en_coord_integral_deterministica(gaussiana, 'Metodo_D', coord, parque_de_turbinas, u_inf, lista_coord_normalizadas,lista_dAi_normalizados)
+data_prueba = calcular_u_en_coord_integral_deterministica(gaussiana, 'Metodo_C', coord, parque_de_turbinas, u_inf, lista_coord_normalizadas,lista_dAi_normalizados)
 # print(data_prueba)
-data_prueba = calcular_potencia_del_parque_integral_deterministica(gaussiana, 'Metodo_Largest', parque_de_turbinas, u_inf, lista_coord_normalizadas,lista_dAi_normalizados)
+# calcular_potencia_del_parque_integral_deterministica(gaussiana, 'Metodo_C', parque_de_turbinas, u_inf, lista_coord_normalizadas,lista_dAi_normalizados)
 # potencia nominal cuando la turbina trabaja con un viento de 8.2 m/s
-potencia_mast = 949.027296358*1000
+potencia_mast = 949.027296358 * 1000
 
 potencia_de_cada_turbina_normalizada = []
 

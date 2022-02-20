@@ -19,25 +19,22 @@ class Estela(object):
 
         if (metodo=='Metodo_C'):
                 for i in range(len(self.coordenadas)):
-                    suma_verif = 0
                     suma = 0
                     for j in range(len(self.turbinas_izquierda)):
-                        suma_verif += self.deficits[i + len(self.coordenadas) * j]
-                        suma += self.deficits[i + len(self.coordenadas) * j] * self.turbinas_izquierda[j].U_f_base
-                    if suma_verif < 1:
+                        suma += self.deficits[i + len(self.coordenadas) * j] * self.turbinas_izquierda[j].u_media
+                    if suma < u_inf.u_perfil:
                         self.vel_estela[i] = u_inf.u_perfil - suma
                     else:
                         self.vel_estela[i] = 0
 
         elif metodo == 'Metodo_D':
                 for i in range(len(self.coordenadas)):
-                    suma_verif = 0
                     suma = 0
                     for j in range(len(self.turbinas_izquierda)):
-                        suma_verif += np.sqrt((self.deficits[i + len(self.coordenadas)*j])**2)
-                        suma += np.sqrt((self.deficits[i + len(self.coordenadas)*j])**2) * self.turbinas_izquierda[j].U_f_base
-                    if suma_verif < 1:
-                        self.vel_estela[i] = u_inf.u_perfil - suma
+                        suma += self.deficits[i + len(self.coordenadas)*j]**2 * self.turbinas_izquierda[j].u_media**2
+                    raiz_suma = np.sqrt(suma)
+                    if raiz_suma < u_inf.u_perfil:
+                        self.vel_estela[i] = u_inf.u_perfil - raiz_suma
                     else:
                         self.vel_estela[i] = 0
 
@@ -48,7 +45,7 @@ class Estela(object):
                         grupo_vel = np.zeros(len(self.turbinas_izquierda))
                         for j in range(len(self.turbinas_izquierda)):
                             grupo_def[j] = self.deficits[i + len(self.coordenadas)*j]
-                            grupo_vel[j] = grupo_def[j] * np.linalg.norm(self.turbinas_izquierda[j].U_f_base)
+                            grupo_vel[j] = grupo_def[j] * self.turbinas_izquierda[j].u_media
                         i_def_max = np.where(grupo_def == np.max(grupo_def))
                         self.vel_estela[i] = u_inf.u_perfil - float(grupo_vel[i_def_max])
 
@@ -58,25 +55,24 @@ class Estela(object):
 
         if metodo == 'Metodo_C':
             for i in range(len(self.coordenadas)):
-                suma_verif = 0
                 suma = 0
+                u_0 = iso_s.calc_mod(self.coordenadas[i])
                 for j in range(len(self.turbinas_izquierda)):
-                    suma_verif += self.deficits[i + len(self.coordenadas) * j]
                     suma +=  self.deficits[i + len(self.coordenadas) * j] * np.linalg.norm(self.turbinas_izquierda[j].U_f_base)
-                if suma_verif < 1:
-                    self.vel_estela[i] = iso_s.calc_mod(self.coordenadas[i]) - suma
+                if suma < u_0:
+                    self.vel_estela[i] = u_0 - suma
                 else:
                     self.vel_estela[i] = 0
 
         elif metodo == 'Metodo_D':
             for i in range(len(self.coordenadas)):
-                suma_verif = 0
                 suma = 0
+                u_0 = iso_s.calc_mod(self.coordenadas[i])
                 for j in range(len(self.turbinas_izquierda)):
-                    suma_verif += self.deficits[i + len(self.coordenadas) * j]
-                    suma += np.sqrt(self.deficits[i + len(self.coordenadas) * j]) * np.linalg.norm(self.turbinas_izquierda[j].U_f_base)
-                if suma_verif < 1:
-                    self.vel_estela[i] = iso_s.calc_mod(self.coordenadas[i]) - suma
+                    suma += self.deficits[i + len(self.coordenadas) * j]**2 * np.linalg.norm(self.turbinas_izquierda[j].U_f_base)**2
+                raiz_suma = np.sqrt(suma)
+                if raiz_suma < u_0:
+                    self.vel_estela[i] = u_0 - raiz_suma
                 else:
                     self.vel_estela[i] = 0
 
@@ -89,8 +85,10 @@ class Estela(object):
                             grupo_def[j] = self.deficits[i + len(self.coordenadas)*j]
                             grupo_vel[j] = grupo_def[j] * np.linalg.norm(self.turbinas_izquierda[j].U_f_base)
                         i_def_max = np.where(grupo_def == np.max(grupo_def))
-                        self.vel_estela[i] = iso_s.calc_mod(self.coordenadas[i]) - float(grupo_vel[i_def_max])
-
+                        self.vel_estela[i] = iso_s.calc_mod(self.coordenadas[i]) - grupo_vel[i_def_max[0].item()]
+                        print(self.vel_estela[i])
+            else:
+                self.vel_estela = iso_s.calc_mod(self.coordenadas[0])
     # def metodo_CLog(self, u_inf):
     #     for i in range(len(self.coordenadas)):
     #         suma_verif = 0

@@ -40,7 +40,7 @@ def calcular_potencia_del_parque_integral_deterministica(modelo_deficit, metodo_
             turbina_virtual = Turbina(turbina_selec.d_0, Coord(np.array([turbina_selec.coord.x,turbina_selec.coord.y,turbina_selec.coord.z])))
             turbina_virtual.c_T = 0
             turbinas_a_la_izquierda_de_turbina_selec = [turbina_virtual]
-            turbina_virtual.U_f_base = u_inf.u_perfil
+            turbina_virtual.u_media = u_inf.u_perfil
 
         # Loop para calculo de deficits en la turbina_selec generado por las turbinas aguas abajo
         for turbina_a_la_izquierda in turbinas_a_la_izquierda_de_turbina_selec:

@@ -24,7 +24,7 @@ from Iso_Superficie import Iso_Superficie
 # estela: instancia que contiene el metodo de superposicion utilizado
 
 
-def calcular_potencia_del_parque_con_terreno(modelo_deficit, metodo_superposicion, parque_de_turbinas, u_inf, iso_s,
+def calcular_potencia_del_parque_con_terreno(modelo_deficit, metodo_superposicion, parque_de_turbinas, iso_s,
                                                 lista_coord_normalizadas, lista_dAi_normalizados):
 
     parque_de_turbinas.ordenar_turbinas_de_izquierda_a_derecha_con_terreno()
@@ -59,7 +59,7 @@ def calcular_potencia_del_parque_con_terreno(modelo_deficit, metodo_superposicio
                 np.array([turbina_selec.coord.x, turbina_selec.coord.y, turbina_selec.coord.z])))
             turbina_virtual.c_T = 0
             turbina_virtual.t = turbina_selec.t
-            turbina_virtual.U_f_base  = turbina_selec.U_f_base
+            turbina_virtual.U_f_base = turbina_selec.U_f_base
             turbinas_a_la_izquierda_de_turbina_selec = [turbina_virtual]
 
         # Loop para calculo de deficits en la turbina_selec generado por las turbinas aguas abajo

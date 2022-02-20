@@ -23,20 +23,20 @@ iso_s = Iso_Superficie(x, y, z, u, v, w)
 # Genera malla mas comoda y menos densa
 iso_s.new_grid(100, d0)
 
-x_coord = 5000
+x_coord = 6000
 y_coord = 2700
 z_coord = iso_s._interp_z(x_coord, y_coord).item() + 80
 coord = Coord([x_coord, y_coord, z_coord])
 
 # Carga las turbinas del parque
-# ruta = r"C:\Users\chesp\Documents\Ingenieria Mecanica\Tesis\Modelos_Analiticos_de_Estelas\Coordenadas_de_turbinas\Coordenadas_turbinas_parque_Rawson.txt"
-# turbinas_list  = cargar_datos('coordenadas_turbinas', ruta)
-turbina_2 = Turbina_Rawson(Coord(np.array([2500,2500,iso_s._interp_z(2500, 2500).item()+80])))
-turbina_0 = Turbina_Rawson(Coord(np.array([2500 + 8*d0, 2500 ,iso_s._interp_z(2500, 2500).item()+80])))
-turbina_3 = Turbina_Rawson(Coord(np.array([2500 + 8*d0, 2500 + 4*d0,iso_s._interp_z(2500 + 8*d0, 2500 + 4*d0).item()+80])))
-turbina_1 = Turbina_Rawson(Coord(np.array([2500 + 16*d0, 2500,iso_s._interp_z(2500 + 16*d0, 2500).item()+80])))
-turbina_4 = Turbina_Rawson(Coord(np.array([ x_coord + d0, y_coord + d0, iso_s._interp_z(x_coord +d0, y_coord + d0).item()+80])))
-turbinas_list = [turbina_0, turbina_1, turbina_2, turbina_3, turbina_4]
+ruta = r"C:\Users\chesp\Documents\Ingenieria Mecanica\Tesis\Modelos_Analiticos_de_Estelas\Coordenadas_de_turbinas\Coordenadas_turbinas_parque_Rawson.txt"
+turbinas_list  = cargar_datos('coordenadas_turbinas', ruta)
+# turbina_2 = Turbina_Rawson(Coord(np.array([2500,2500,iso_s._interp_z(2500, 2500).item()+80])))
+# turbina_0 = Turbina_Rawson(Coord(np.array([2500 + 8*d0, 2500 ,iso_s._interp_z(2500, 2500).item()+80])))
+# turbina_3 = Turbina_Rawson(Coord(np.array([2500 + 8*d0, 2500 + 4*d0,iso_s._interp_z(2500 + 8*d0, 2500 + 4*d0).item()+80])))
+# turbina_1 = Turbina_Rawson(Coord(np.array([2500 + 16*d0, 2500,iso_s._interp_z(2500 + 16*d0, 2500).item()+80])))
+# turbina_4 = Turbina_Rawson(Coord(np.array([ x_coord + d0, y_coord + d0, iso_s._interp_z(x_coord +d0, y_coord + d0).item()+80])))
+# turbinas_list = [turbina_0, turbina_1, turbina_2, turbina_3, turbina_4]
 
 
 fig , axes = plt.subplots(1,2)
@@ -77,9 +77,9 @@ iso_s.redef_interpoladores(streamlines, d0)
 iso_s.flujo_base_turbinas(turbinas_list)
 
 # Calcula CT, CP, P de las turbinas
-# data_prueba = calcular_potencia_del_parque_con_terreno(gaussiana_adaptado_al_terreno, 'largest', parque_de_turbinas, u_inf, iso_s, lista_coord_normalizadas,lista_dAi_normalizados)
-data_prueba = calcular_u_con_terreno(gaussiana_adaptado_al_terreno, 'Metodo_Largest', coord, parque_de_turbinas, iso_s, lista_coord_normalizadas,lista_dAi_normalizados)
-print(data_prueba)
+calcular_potencia_del_parque_con_terreno(gaussiana_adaptado_al_terreno, 'Metodo_C', parque_de_turbinas, iso_s, lista_coord_normalizadas,lista_dAi_normalizados)
+# data_prueba = calcular_u_con_terreno(gaussiana_adaptado_al_terreno, 'Metodo_D', coord, parque_de_turbinas, iso_s, lista_coord_normalizadas,lista_dAi_normalizados)
+# print(data_prueba)
 # potencia nominal cuando la turbina trabaja con un viento de 8.2 m/s
 potencia_mast = 1800 * 1000
 
@@ -91,23 +91,23 @@ for turbina in parque_de_turbinas.turbinas:
     else:
         potencia_de_cada_turbina_normalizada.append(turbina.potencia/potencia_mast)
 # Ploteo posicion sin rotar de las turbinas
-for turbina in turbinas_list:
-    if turbina.potencia is None:
-        print(turbina.coord)
-    else:
-        x = turbina.coord.x
-        y = turbina.coord.y
-        axes[0].plot(turbina.coord.x, turbina.coord.y, 'o')
-        axes[0].text(x*(1 - 0.01), y * (1 + 0.01),str(round(turbina.coord.z,2)), fontsize=6)
-        axes[0].text(x*(1 - 0.01), y * (1 - 0.01), round(turbina.potencia / potencia_mast, 2), fontsize=6)
-axes[0].set_title('Turbinas')
-axes[0].plot(x_coord, y_coord, 'o')
-axes[0].text(x_coord*(1 - 0.01), y_coord * (1 + 0.01), 'coord' + str(round(z_coord,2)), fontsize=6)
-axes[0].text(x_coord, y_coord * (1 - 0.01), round(data_prueba,2), fontsize=6)
-axes[0].set_ylim(2000, 3000)
-fig.tight_layout()
-plt.show()
+# for turbina in turbinas_list:
+#     if turbina.potencia is None:
+#         print(turbina.coord)
+#     else:
+#         x = turbina.coord.x
+#         y = turbina.coord.y
+#         axes[0].plot(turbina.coord.x, turbina.coord.y, 'o')
+#         axes[0].text(x*(1 - 0.01), y * (1 + 0.01),str(round(turbina.coord.z,2)), fontsize=6)
+#         axes[0].text(x*(1 - 0.01), y * (1 - 0.01), round(turbina.potencia / potencia_mast, 2), fontsize=6)
+# axes[0].set_title('Turbinas')
+# axes[0].plot(x_coord, y_coord, 'o')
+# axes[0].text(x_coord*(1 - 0.01), y_coord * (1 + 0.01), 'coord' + str(round(z_coord,2)), fontsize=6)
+# axes[0].text(x_coord, y_coord * (1 - 0.01), round(data_prueba,2), fontsize=6)
+# axes[0].set_ylim(2000, 3000)
+# fig.tight_layout()
+# plt.show()
 print(sum(potencia_de_cada_turbina_normalizada))
-print(potencia_de_cada_turbina_normalizada)
-print(iso_s.meshXmin, iso_s.meshXmax, iso_s.meshYmin, iso_s.meshYmax)
-print(min(iso_s.xng), max(iso_s.xng), min(iso_s.yng), max(iso_s.yng))
+# print(potencia_de_cada_turbina_normalizada)
+# print(iso_s.meshXmin, iso_s.meshXmax, iso_s.meshYmin, iso_s.meshYmax)
+# print(min(iso_s.xng), max(iso_s.xng), min(iso_s.yng), max(iso_s.yng))

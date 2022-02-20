@@ -88,16 +88,11 @@ from load_txt_datos import cargar_datos
 # plt.show()
 
 
-meshXmin, meshXmax, npoiX = 1000, 4000, 10
-meshYmin, meshYmax, npoiY = 1000, 4000, 10
-xg = np.linspace(meshXmin, meshXmax, npoiX)
-yg = np.linspace(meshYmin, meshYmax, npoiY)
-XG, YG = np.meshgrid(xg, yg)
-positions = np.vstack([XG.ravel(), YG.ravel()])
-coordenadas = []
-for i in range(len(positions[0])):
-    x = positions[:,i][0]
-    y = positions[:,i][1]
-    cooord = Coord([x, y, 0])
-    coordenadas.append(cooord)
-print('hola')
+delta = 0.025
+x = np.arange(-3.0, 3.0, delta)
+y = np.arange(-2.0, 2.0, delta)
+X, Y = np.meshgrid(x, y)
+Z1 = np.exp(-X**2 - Y**2)
+Z2 = np.exp(-(X - 1)**2 - (Y - 1)**2)
+Z = (Z1 - Z2) * 2
+print(Z)
