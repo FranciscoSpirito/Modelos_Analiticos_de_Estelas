@@ -28,7 +28,14 @@ def cargar_datos(tipo, ruta):
             return lista_de_turbinas
 
 
+    elif tipo == 'gaussiano':
+        datos_isosuperficie = np.loadtxt(ruta, delimiter=',', skiprows=1)
+        y = datos_isosuperficie[:, 0]
+        u = datos_isosuperficie[:, 1]
+        v = datos_isosuperficie[:, 2]
+        w = datos_isosuperficie[:, 3]
 
+        return y, u, v, w
 
 # ruta = r"C:\Users\chesp\Documents\Ingenieria Mecanica\Tesis\Modelos_Analiticos_de_Estelas\Coordenadas_de_turbinas\Coordenadas_turbinas_parque_Rawson.txt"
 # turbinas_list  = np.loadtxt(ruta, skiprows=2)
