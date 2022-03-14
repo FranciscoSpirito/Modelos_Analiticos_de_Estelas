@@ -17,7 +17,28 @@ class Estela(object):
     def merge_deterministica(self, metodo, u_inf):
         self.vel_estela = np.zeros(len(self.coordenadas))
 
-        if (metodo=='Metodo_C'):
+        if (metodo=='Metodo_A'):
+                for i in range(len(self.coordenadas)):
+                    suma = 0
+                    for j in range(len(self.turbinas_izquierda)):
+                        suma += self.deficits[i + len(self.coordenadas) * j] * u_inf.u_perfil
+                    if suma < u_inf.u_perfil:
+                        self.vel_estela[i] = u_inf.u_perfil - suma
+                    else:
+                        self.vel_estela[i] = 0
+
+        elif metodo == 'Metodo_B':
+                for i in range(len(self.coordenadas)):
+                    suma = 0
+                    for j in range(len(self.turbinas_izquierda)):
+                        suma += self.deficits[i + len(self.coordenadas)*j]**2 * u_inf.u_perfil**2
+                    raiz_suma = np.sqrt(suma)
+                    if raiz_suma < u_inf.u_perfil:
+                        self.vel_estela[i] = u_inf.u_perfil - raiz_suma
+                    else:
+                        self.vel_estela[i] = 0
+
+        elif (metodo=='Metodo_C'):
                 for i in range(len(self.coordenadas)):
                     suma = 0
                     for j in range(len(self.turbinas_izquierda)):
@@ -50,10 +71,31 @@ class Estela(object):
                         self.vel_estela[i] = u_inf.u_perfil - float(grupo_vel[i_def_max])
 
     # CON TERRENO
-    def merge_terreno(self, metodo, iso_s):
+    def merge_terreno(self, metodo, iso_s, u_inf):
         self.vel_estela = np.zeros(len(self.coordenadas))
 
-        if metodo == 'Metodo_C':
+        if (metodo == 'Metodo_A'):
+            for i in range(len(self.coordenadas)):
+                suma = 0
+                for j in range(len(self.turbinas_izquierda)):
+                    suma += self.deficits[i + len(self.coordenadas) * j] * u_inf.u_perfil
+                if suma < u_inf.u_perfil:
+                    self.vel_estela[i] = u_inf.u_perfil- suma
+                else:
+                    self.vel_estela[i] = 0
+
+        elif metodo == 'Metodo_B':
+            for i in range(len(self.coordenadas)):
+                suma = 0
+                for j in range(len(self.turbinas_izquierda)):
+                    suma += self.deficits[i + len(self.coordenadas) * j] ** 2 * u_inf.u_perfil ** 2
+                raiz_suma = np.sqrt(suma)
+                if raiz_suma < u_inf.u_perfil:
+                    self.vel_estela[i] = u_inf.u_perfil - raiz_suma
+                else:
+                    self.vel_estela[i] = 0
+
+        elif metodo == 'Metodo_C':
             for i in range(len(self.coordenadas)):
                 suma = 0
                 u_0 = iso_s.calc_mod(self.coordenadas[i])

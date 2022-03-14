@@ -25,7 +25,7 @@ from Iso_Superficie import Iso_Superficie
 
 
 def calcular_u_con_terreno(modelo_deficit, metodo_superposicion, coord, parque_de_turbinas, iso_s,
-                                                lista_coord_normalizadas, lista_dAi_normalizados):
+                                                lista_coord_normalizadas, lista_dAi_normalizados, u_inf):
 
     parque_de_turbinas.ordenar_turbinas_de_izquierda_a_derecha_con_terreno()
     turbinas_a_la_izquierda_de_coord = parque_de_turbinas.turbinas_a_la_izquierda_de_una_coord_con_terreno(coord, iso_s)
@@ -86,7 +86,7 @@ def calcular_u_con_terreno(modelo_deficit, metodo_superposicion, coord, parque_d
 
             # crea una instancia de Estela con los datos calculados sobre las coordenadas aleatorias
             estela_sobre_turbina_selec = Estela(arreglo_deficit, turbina_selec.lista_coord, turbinas_a_la_izquierda_de_turbina_selec)
-            estela_sobre_turbina_selec.merge_terreno(metodo_superposicion, iso_s)
+            estela_sobre_turbina_selec.merge_terreno(metodo_superposicion, iso_s, u_inf)
             turbina_selec.u_disco = estela_sobre_turbina_selec.vel_estela
 
             # Se calculan C_T C_P y Potencia de cada turbina
@@ -107,7 +107,7 @@ def calcular_u_con_terreno(modelo_deficit, metodo_superposicion, coord, parque_d
     # crea una instancia de Estela con los datos calculados sobre coord generados por las coordenadas a
     # la izquierda
     estela_sobre_coord = Estela(deficit_normalizado_en_coord, [coord], turbinas_a_la_izquierda_de_coord)
-    estela_sobre_coord.merge_terreno(metodo_superposicion, iso_s)
+    estela_sobre_coord.merge_terreno(metodo_superposicion, iso_s, u_inf)
 
     # Calculo de velocidad en coord
     u = float(estela_sobre_coord.vel_estela)

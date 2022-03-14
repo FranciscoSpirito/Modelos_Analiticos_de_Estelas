@@ -25,7 +25,7 @@ from Iso_Superficie import Iso_Superficie
 
 
 def calcular_potencia_del_parque_con_terreno(modelo_deficit, metodo_superposicion, parque_de_turbinas, iso_s,
-                                                lista_coord_normalizadas, lista_dAi_normalizados):
+                                                lista_coord_normalizadas, lista_dAi_normalizados, u_inf):
 
     parque_de_turbinas.ordenar_turbinas_de_izquierda_a_derecha_con_terreno()
     # Radio maximo de la "zona influyente" de interseccion con las ldc de las turbinas aguas abajo
@@ -79,7 +79,7 @@ def calcular_potencia_del_parque_con_terreno(modelo_deficit, metodo_superposicio
 
         # crea una instancia de Estela con los datos calculados sobre las coordenadas aleatorias
         estela_sobre_turbina_selec = Estela(arreglo_deficit, turbina_selec.lista_coord, turbinas_a_la_izquierda_de_turbina_selec)
-        estela_sobre_turbina_selec.merge_terreno(metodo_superposicion, iso_s)
+        estela_sobre_turbina_selec.merge_terreno(metodo_superposicion, iso_s, u_inf)
         turbina_selec.u_disco = estela_sobre_turbina_selec.vel_estela
 
         # Se calculan C_T C_P y Potencia de cada turbina
