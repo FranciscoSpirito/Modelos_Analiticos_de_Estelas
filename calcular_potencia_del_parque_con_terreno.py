@@ -79,7 +79,7 @@ def calcular_potencia_del_parque_con_terreno(modelo_deficit, metodo_superposicio
 
         # crea una instancia de Estela con los datos calculados sobre las coordenadas aleatorias
         estela_sobre_turbina_selec = Estela(arreglo_deficit, turbina_selec.lista_coord, turbinas_a_la_izquierda_de_turbina_selec)
-        estela_sobre_turbina_selec.merge_terreno(metodo_superposicion, iso_s, u_inf)
+        estela_sobre_turbina_selec.merge_terreno(metodo_superposicion, iso_s)
         turbina_selec.u_disco = estela_sobre_turbina_selec.vel_estela
 
         # Se calculan C_T C_P y Potencia de cada turbina
