@@ -7,9 +7,9 @@ class Gaussiana_adaptado_al_Terreno(Modelo):
 
     def __init__(self):
         super(Gaussiana_adaptado_al_Terreno, self).__init__()
-
-        self.k_estrella = 0.0297
-        self.epsilon = 0.3281
+        # Ajuste ley de crecimiento
+        self.k_estrella = 0.008733
+        self.epsilon = 0.328015
 
     # turbina_a_la_izquierda: turbina aguas abajo
     # coordenada: coord dentro del disco de la turbina_selec

@@ -17,7 +17,7 @@ class Estela(object):
     def merge_deterministica(self, metodo, u_inf):
         self.vel_estela = np.zeros(len(self.coordenadas))
 
-        if (metodo=='Metodo_A'):
+        if (metodo == 'Metodo_A'):
                 for i in range(len(self.coordenadas)):
                     suma = 0
                     for j in range(len(self.turbinas_izquierda)):
@@ -59,6 +59,25 @@ class Estela(object):
                     else:
                         self.vel_estela[i] = 0
 
+        elif metodo == 'Metodo_Bernoulli':
+            # for i in range(len(self.coordenadas)):
+            #     suma = 0
+            #     for j in range(len(self.turbinas_izquierda)):
+            #         suma += 1/2 * (2 - self.deficits[i + len(self.coordenadas) * j]) * self.deficits[i + len(self.coordenadas) * j]
+            #     if 2*suma < 1:
+            #         self.vel_estela[i] = u_inf.u_perfil * np.sqrt(1 - 2*suma)
+            #     else:
+            #         self.vel_estela[i] = 0
+            if len(self.turbinas_izquierda) != 0:
+                for i in range(len(self.coordenadas)):
+                    grupo_def = np.zeros(len(self.turbinas_izquierda))
+                    for j in range(len(self.turbinas_izquierda)):
+                        grupo_def[j] = self.deficits[i + len(self.coordenadas) * j]
+                    i_def_max = np.where(grupo_def == np.max(grupo_def))
+                    i_def_max = int(i_def_max[0])
+                    self.vel_estela[i] = self.turbinas_izquierda[i_def_max].u_media * np.sqrt(1 - 2 * float(grupo_def[i_def_max]))
+
+
         elif metodo == 'Metodo_Largest':
             if len(self.turbinas_izquierda) != 0:
                     for i in range(len(self.coordenadas)):
@@ -69,6 +88,8 @@ class Estela(object):
                             grupo_vel[j] = grupo_def[j] * self.turbinas_izquierda[j].u_media
                         i_def_max = np.where(grupo_def == np.max(grupo_def))
                         self.vel_estela[i] = u_inf.u_perfil - float(grupo_vel[i_def_max])
+
+
 
     # CON TERRENO
     def merge_terreno(self, metodo, iso_s):
