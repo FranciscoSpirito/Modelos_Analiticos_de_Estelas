@@ -8,11 +8,12 @@ class Gaussiana(Modelo):
 
     def __init__(self):
         super(Gaussiana, self).__init__()
-        # Ajuste ley de crecimiento
-        self.k_estrella = 0.008733
-        self.epsilon = 0.328015
-        # self.k_estrella = 0.009405
-        # self.epsilon = 0.3196
+        # Ajuste Gaussiano ley de crecimiento
+        self.k_estrella = 0.011506
+        self.epsilon = 0.317822
+        # Ajuste Gaussiano Simple
+        # self.k_estrella = 0.011001
+        # self.epsilon = 0.311072
     def evaluar_deficit_normalizado(self, turbina, coord_selec):
         # sigma_n es sigma/d_0
         sigma_n = (self.k_estrella * (abs(turbina.coord.x - coord_selec.x)/turbina.d_0) + self.epsilon)

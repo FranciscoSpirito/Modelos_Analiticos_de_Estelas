@@ -25,7 +25,7 @@ from Iso_Superficie import Iso_Superficie
 
 
 def calcular_u_con_terreno(modelo_deficit, metodo_superposicion, coord, parque_de_turbinas, iso_s,
-                                                lista_coord_normalizadas, lista_dAi_normalizados, u_inf):
+                                                lista_coord_normalizadas, lista_dAi_normalizados):
 
     parque_de_turbinas.ordenar_turbinas_de_izquierda_a_derecha_con_terreno()
     turbinas_a_la_izquierda_de_coord = parque_de_turbinas.turbinas_a_la_izquierda_de_una_coord_con_terreno(coord, iso_s)

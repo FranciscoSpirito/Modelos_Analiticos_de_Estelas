@@ -17,20 +17,18 @@ Se realiza una prueba, igual a prueba rawson altura
 donde se cambia el metodo de integrar 
 """
 
-jensen = Jensen()
-frandsen = Frandsen()
 gaussiana = Gaussiana()
 D = 90
 
 
-# turbina_0 = Turbina_Rawson(Coord(np.array([10,10,250])))
-# turbina_1 = Turbina_Rawson(Coord(np.array([(-30),(0),250])))
-# turbina_2 = Turbina_Rawson(Coord(np.array([(0),(0),250])))
+turbina_0 = Turbina_Rawson(Coord(np.array([0,0,250])))
+turbina_1 = Turbina_Rawson(Coord(np.array([90*5,0,250])))
+turbina_2 = Turbina_Rawson(Coord(np.array([90*10,0,250])))
 # turbina_3 = Turbina_Rawson(Coord(np.array([(5),(-5),250])))
-# turbinas_list = [turbina_0, turbina_1, turbina_2, turbina_3]
+turbinas_list = [turbina_0, turbina_1, turbina_2]
 
-ruta = r"C:\Users\chesp\Documents\Ingenieria Mecanica\Tesis\Modelos_Analiticos_de_Estelas\Coordenadas_de_turbinas\Coordenadas_turbinas_parque_Rawson.txt"
-turbinas_list = cargar_datos('coordenadas_turbinas', ruta)
+# ruta = r"C:\Users\chesp\Documents\Ingenieria Mecanica\Tesis\Modelos_Analiticos_de_Estelas\Coordenadas_de_turbinas\Coordenadas_turbinas_parque_Rawson.txt"
+# turbinas_list = cargar_datos('coordenadas_turbinas', ruta)
 
 perfil = 'cte'
 z_0 = 0.01
@@ -48,7 +46,7 @@ parque_de_turbinas = Parque_de_turbinas(turbinas_list, z_0, z_mast)
 #     i+=1
 # plt.show()
 
-cantidad_de_puntos = 5
+cantidad_de_puntos = 1
 espesor = turbinas_list[0].definicion_de_espesor(cantidad_de_puntos)
 lista_coord_normalizadas, lista_dAi_normalizados = turbinas_list[0].coordenadas_y_areas_normalizadas(cantidad_de_puntos, espesor)
 
@@ -58,7 +56,7 @@ z_o = 180
 
 coord = Coord(np.array([x_o, y_o, z_o]))
 
-data_prueba = calcular_u_en_coord_integral_deterministica(gaussiana, 'Metodo_C', coord, parque_de_turbinas, u_inf, lista_coord_normalizadas,lista_dAi_normalizados)
+data_prueba = calcular_u_en_coord_integral_deterministica(gaussiana, 'Metodo_Momento_Lineal', coord, parque_de_turbinas, u_inf, lista_coord_normalizadas,lista_dAi_normalizados)
 # print(data_prueba)
 # calcular_potencia_del_parque_integral_deterministica(gaussiana, 'Metodo_C', parque_de_turbinas, u_inf, lista_coord_normalizadas,lista_dAi_normalizados)
 # potencia nominal cuando la turbina trabaja con un viento de 8.2 m/s

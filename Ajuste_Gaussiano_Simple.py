@@ -11,18 +11,21 @@ def gauss(y, a, sigma):
 def rect(x, k, epsilon):
     return k*x + epsilon
 
-ruta  = r"C:\Users\chesp\Documents\Ingenieria Mecanica\Tesis\Modelos_Analiticos_de_Estelas\Casos_tunel_de_viento\Caso0\Estela_1D_U.csv"
+# ruta  = r"C:\Users\chesp\Documents\Ingenieria Mecanica\Tesis\Modelos_Analiticos_de_Estelas\Casos_tunel_de_viento\files.Uinf12.Uref12_unif_2\postProcessing.Uinf12.Uref12\Estela_1D_U.csv"
+ruta  = r"C:\Users\chesp\Documents\Ingenieria Mecanica\Tesis\Modelos_Analiticos_de_Estelas\Casos_tunel_de_viento\files.Uinf12.Uref12_adap\postProcessing.Uinf12.Uref12\Estela_1D_U.csv"
+
 X = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16']
 l_ruta = list(ruta)
 l_sigma = []
 
 for x in X:
-    l_ruta[116] = x
+    # l_ruta[166] = x
+    l_ruta[164] = x
     ruta = "".join(l_ruta)
     y, u, v, w = cargar_datos('gaussiano', ruta)
 
     # La funcion gaussiana es de deficits por ende normalizamos las velocidades
-    u_inf = np.max(u)
+    u_inf = 12
     deficits = (u_inf - u) / u_inf
     ynorm = (y - 567)/126
 
@@ -31,7 +34,7 @@ for x in X:
     sigma = sum(deficits * (ynorm) ** 2) / n
     a0 = np.max(deficits)
     # popt retiene los parametros optimizados y pcov una matriz de covarianza que no utilizamos (curve fit devuelve ambas cosas)
-    popt, pcov = curve_fit(gauss, ynorm, deficits, p0=[a0, sigma], bounds=(0, 10))
+    popt, pcov = curve_fit(gauss, ynorm, deficits, p0=[a0, sigma], bounds=(-1, 15))
     l_sigma.append(popt[1])
 
 
