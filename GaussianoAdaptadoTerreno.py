@@ -1,12 +1,12 @@
 import numpy as np
 from Modelo import Modelo
-from Iso_Superficie import Iso_Superficie
+from IsoSuperficie import IsoSuperficie
 
 
-class Gaussiana_adaptado_al_Terreno(Modelo):
+class GaussianoAdaptadoTerreno(Modelo):
 
     def __init__(self):
-        super(Gaussiana_adaptado_al_Terreno, self).__init__()
+        super(GaussianoAdaptadoTerreno, self).__init__()
         # Ajuste ley de crecimiento
         self.k_estrella = 0.008733
         self.epsilon = 0.328015

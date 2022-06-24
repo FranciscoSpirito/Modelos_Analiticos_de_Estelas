@@ -1,13 +1,13 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from Gaussiana_adaptado_al_Terreno import Gaussiana_adaptado_al_Terreno
-from Parque_de_turbinas import Parque_de_turbinas
+from GaussianoAdaptadoTerreno import GaussianoAdaptadoTerreno
+from ParqueEolico import ParqueEolico
 from Turbina_Rawson import Turbina_Rawson
 from Coord import Coord
 from U_inf import U_inf
 from calcular_u_en_coord_con_terreno import calcular_u_con_terreno
 from load_txt_datos import cargar_datos
-from Iso_Superficie import Iso_Superficie
+from IsoSuperficie import IsoSuperficie
 
 
 """
@@ -25,7 +25,7 @@ A continuacion se grafica:
 """
 
 # Modelo analitico
-gaussiana_adaptado_al_Terreno = Gaussiana_adaptado_al_Terreno()
+gaussiana_adaptado_al_Terreno = GaussianoAdaptadoTerreno()
 xtb, ytb, ztb = 3000, 3000, 181
 # Definimos la primera turbina en el 0 0
 turbina_0 = Turbina_Rawson(Coord(np.array([xtb,ytb,ztb + 80])))
@@ -44,7 +44,7 @@ lista_coord_normalizadas, lista_dAi_normalizados = turbina_0.coordenadas_y_areas
 ruta  = r"C:\Users\chesp\Documents\Ingenieria Mecanica\Tesis\Modelos_Analiticos_de_Estelas\Mallado_con_velocidad_cte\mallado_con_u_cte.txt"
 xl, yl, zl, ul, vl, wl = cargar_datos('isosuperficie', ruta)
 x, y, z, u, v, w = np.array(xl), np.array(yl), np.array(zl), np.array(ul), np.array(vl), np.array(wl)
-iso_s = Iso_Superficie(x, y, z, u, v, w)
+iso_s = IsoSuperficie(x, y, z, u, v, w)
 # Genera malla mas comoda y menos densa
 iso_s.new_grid(100, D)
 
@@ -72,7 +72,7 @@ u_inf.perfil_flujo_base(coord_u)
 x_0 = xtb + 16*D
 y = np.arange(xtb-1.2*D, ytb+1.2*D, 0.01)
 z_o = turbina_0.coord.z
-parque_de_turbinas_primera_indep = Parque_de_turbinas([turbina_0], z_0, z_mast)
+parque_de_turbinas_primera_indep = ParqueEolico([turbina_0], z_0, z_mast)
 data_turbina_0_independiente = np.zeros(len(y))
 
 for i in range(len(y)):
@@ -82,7 +82,7 @@ for i in range(len(y)):
 turbina_0.reiniciar_turbina()
 # calculo el deficit para la segunda turbina independiente (ubicada en x = 8D) a 16D
 
-parque_de_turbinas_alineada_indep = Parque_de_turbinas([turbina_alineada], z_0, z_mast)
+parque_de_turbinas_alineada_indep = ParqueEolico([turbina_alineada], z_0, z_mast)
 data_turbina_alineada_indep = np.zeros(len(y))
 
 for i in range(len(y)):
@@ -92,9 +92,9 @@ for i in range(len(y)):
 turbina_alineada.reiniciar_turbina()
 
 
-parque_de_turbinas_alineadas = Parque_de_turbinas([turbina_0, turbina_alineada], z_0, z_mast)
-parque_de_turbinas_parc_alineadas = Parque_de_turbinas([turbina_0, turbina_parcialmente_alineada], z_0, z_mast)
-parque_de_turbinas_desalineadas = Parque_de_turbinas([turbina_0, turbina_desalineada], z_0, z_mast)
+parque_de_turbinas_alineadas = ParqueEolico([turbina_0, turbina_alineada], z_0, z_mast)
+parque_de_turbinas_parc_alineadas = ParqueEolico([turbina_0, turbina_parcialmente_alineada], z_0, z_mast)
+parque_de_turbinas_desalineadas = ParqueEolico([turbina_0, turbina_desalineada], z_0, z_mast)
 
 data_prueba_alineadas_Metodo_C = np.zeros(len(y))
 data_prueba_parc_alineadas_Metodo_C = np.zeros(len(y))

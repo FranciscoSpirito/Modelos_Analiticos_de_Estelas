@@ -3,7 +3,7 @@ from __future__ import division
 import numpy as np
 # coding=utf-8
 
-class Parque_de_turbinas(object):
+class ParqueEolico(object):
 
     def __init__(self, turbinas, z_0, z_mast):
         self.turbinas = turbinas

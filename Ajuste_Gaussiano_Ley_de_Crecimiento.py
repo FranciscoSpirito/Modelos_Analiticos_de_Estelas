@@ -9,17 +9,20 @@ def gauss(y, a, sigma):
     return a * np.exp(- (y ** 2) / (2 * sigma ** 2))
 
 
-# ruta  = r"C:\Users\chesp\Documents\Ingenieria Mecanica\Tesis\Modelos_Analiticos_de_Estelas\Casos_tunel_de_viento\files.Uinf12.Uref12_unif_2\postProcessing.Uinf12.Uref12\Estela_1D_U.csv"
-ruta  = r"C:\Users\chesp\Documents\Ingenieria Mecanica\Tesis\Modelos_Analiticos_de_Estelas\Casos_tunel_de_viento\files.Uinf12.Uref12_adap\postProcessing.Uinf12.Uref12\Estela_1D_U.csv"
+ruta  = r"C:\Users\chesp\Documents\Ingenieria Mecanica\Tesis\Modelos_Analiticos_de_Estelas\Casos_tunel_de_viento\k-epsilon\Deficits\Caso0\Estela_1D_U.csv"
+# X = ['1','2','3','4','5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16']
+# X = ['2','3','4','5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16']
+# X = ['3','4','5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16']
+# X = ['4','5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16']
 X = ['5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16']
+# X = ['6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16']
 l_ruta = list(ruta)
 rmedios = []
 ylargo = []
 deficitsdivmax = []
 
 for x in X:
-    # l_ruta[166] = x
-    l_ruta[164] = x
+    l_ruta[135] = x
     ruta = "".join(l_ruta)
     y, u, v, w = cargar_datos('gaussiano', ruta)
     # Movemos el centro a y=0 y normalizamos
@@ -28,7 +31,7 @@ for x in X:
     u_inf = 12
     deficits = (u_inf - u) / u_inf
 
-    # Para realizar el ajuste hay que brindarle una semilla aproximada de a, mu y sigma
+    # Para realizar el ajuste hay que brindarle una semilla aproximada de a y sigma
     n = len(ynorm)
     sigma = sum(deficits * (ynorm ** 2)) / n
     a0 = np.max(deficits)
@@ -41,7 +44,9 @@ for x in X:
         ylargo.append(ys)
         deficitsdivmax.append(deficit/max(deficits))
 
-    plt.plot(ynorm[250:], deficits[250:]/max(deficits), 'o', label='x = '+str(x), markersize= 0.5)
+    plt.plot(ynorm[250:], deficits[250:]/max(deficits), 'o', color='slategray', markersize=0.5)
+
+plt.plot(ynorm[250:], deficits[250:]/max(deficits), 'o', color='slategray', label='Datos CFD', markersize=0.5)
 
 
 # Funcion Gaussiana para ajuste unico dependiente de x,y con parametros k,epsilon
@@ -50,7 +55,12 @@ def gauss_ke(X, k, epsilon):
     return np.exp(- ((y ** 2) / (2 * (k*x+epsilon) ** 2)))
 
 # Definicion de vector xlargo para complementar ylargo
+# x_norm = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+# x_norm = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+# x_norm = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+# x_norm = [4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
 x_norm = [5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+# x_norm = [6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
 xlargo  = []
 for x in x_norm:
     for i in range(251):
@@ -59,39 +69,48 @@ for x in x_norm:
 # Ajuste de ley de crecimiento
 popt, pcov = curve_fit(gauss_ke, (xlargo, ylargo), deficitsdivmax, p0=[0.008833, 0.316166])
 for xu in x_norm:
-    plt.plot(ynorm[250:], gauss_ke((xu, ynorm[250:]), *popt), color='green')
-plt.plot(ynorm[250:], gauss_ke((5, ynorm[250:]),*popt), color='green', label='k=%f, ϵ=%f' % tuple(popt))
+    plt.plot(ynorm[250:], gauss_ke((xu, ynorm[250:]), *popt), color='black')
+plt.plot(ynorm[250:], gauss_ke((5, ynorm[250:]),*popt), color='black', label='Ajuste: k=%f, ϵ=%f' % tuple(popt))
 plt.legend(markerscale=5)
-plt.xlabel('y')
-plt.ylabel(r'$ΔU/ΔU_{max}$')
+plt.xlabel('y/d')
+plt.ylabel(r'$Δu/Δu_{max}$')
+plt.savefig(r'C:\Users\chesp\Documents\Ingenieria Mecanica\Tesis\Imagenes\Imagenes Modelos Analiticos\Ajustes\Ajuste_Gaussiano')
 plt.show()
 
+print(*popt)
+# mediumseagreen
+# springgreen
+# mintcream
+# mediumspringgreen
+# mediumaquamarine
+# aquamarine
 
 
-# VERIFICACION DE CURVA DE AJUSTE A 16D
-CT = 0.717722980142324 #CT para 12m/s
-def gaussiana(X, k, epsilon):
-    x, y = X
-    sigma_n = (k * x + epsilon)
-    c = 1 - np.sqrt(1 - (CT / (8 * (sigma_n ** 2))))
-    return c * np.exp(-(y ** 2 / (2 * (sigma_n ** 2))))
-
-
-for x in X:
-    # l_ruta[166] = x
-    l_ruta[164] = x
-    ruta = "".join(l_ruta)
-    y, u, v, w = cargar_datos('gaussiano', ruta)
-    # Movemos el centro a y=0 y normalizamos
-    ynorm = (y - 567)/126
-    # La funcion gaussiana es de deficits por ende normalizamos las velocidades
-    u_inf = 12
-    deficits = (u_inf - u) / u_inf
-    x = int(x)
-    plt.plot(ynorm, deficits,'o', color='red', markersize=0.5, label="CFD x=%f" % x)
-    plt.plot(ynorm, gaussiana((x, ynorm), *popt), color='green', label='ajuste x=%f' % x)
-plt.legend(fontsize=5, markerscale=10)
-plt.show()
+#
+# # VERIFICACION DE CURVA DE AJUSTE A 16D
+# CT = 0.717722980142324 #CT para 12m/s
+# def gaussiana(X, k, epsilon):
+#     x, y = X
+#     sigma_n = (k * x + epsilon)
+#     c = 1 - np.sqrt(1 - (CT / (8 * (sigma_n ** 2))))
+#     return c * np.exp(-(y ** 2 / (2 * (sigma_n ** 2))))
+#
+#
+# for x in X:
+#     # l_ruta[166] = x
+#     l_ruta[164] = x
+#     ruta = "".join(l_ruta)
+#     y, u, v, w = cargar_datos('gaussiano', ruta)
+#     # Movemos el centro a y=0 y normalizamos
+#     ynorm = (y - 567)/126
+#     # La funcion gaussiana es de deficits por ende normalizamos las velocidades
+#     u_inf = 12
+#     deficits = (u_inf - u) / u_inf
+#     x = int(x)
+#     plt.plot(ynorm, deficits,'o', color='red', markersize=0.5, label="CFD x=%f" % x)
+#     plt.plot(ynorm, gaussiana((x, ynorm), *popt), color='green', label='ajuste x=%f' % x)
+# plt.legend(fontsize=5, markerscale=10)
+# plt.show()
 
 
 #

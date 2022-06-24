@@ -4,7 +4,7 @@ from math import ceil
 
 # Proyecto original: https://github.com/rougier/windmap
 
-class Iso_Superficie(object):
+class IsoSuperficie(object):
 
     def __init__(self, X, Y, Z, U, V, W):
         """
@@ -122,10 +122,9 @@ class Iso_Superficie(object):
 
         return streamlines
 
-    # Redefine interpoladores, luego de rotar las streamlines
+    # Redefine interpoladores, luego de calcular las streamlines
     def redef_interpoladores(self, streamlines, d0):
 
-        nstream = len(streamlines)
         xs = []
         ys = []
         dzs = []
@@ -229,22 +228,22 @@ class Iso_Superficie(object):
 
         return x_semilla, y_semilla
 
-    # Rota las streamlines de modo que quede x sea la direccion del viento
-    def rotar(self, angulo_viento, streamlines):
-        theta = -(180 + (90 - angulo_viento))
-        theta_rad = np.radians(theta)
-        R = np.matrix([[np.cos(theta_rad), -np.sin(theta_rad)], [np.sin(theta_rad), np.cos(theta_rad)]])
-        for streamline in streamlines:
-            for i in range(len(streamline[0])):
-                vector_coord = np.array([streamline[0][i], streamline[1][i]])
-                vector_coord_rotado = np.dot(R, vector_coord)
-                streamline[0][i] = vector_coord_rotado.getA1()[0]
-                streamline[1][i] = vector_coord_rotado.getA1()[1]
-                vector_vel = np.array([streamline[4][i], streamline[5][i]])
-                vector_vel_rotado = np.dot(R, vector_vel)
-                streamline[4][i] = vector_vel_rotado.getA1()[0]
-                streamline[5][i] = vector_vel_rotado.getA1()[1]
-        return streamlines
+    # # Rota las streamlines de modo que quede x sea la direccion del viento
+    # def rotar(self, angulo_viento, streamlines):
+    #     theta = -(180 + (90 - angulo_viento))
+    #     theta_rad = np.radians(theta)
+    #     R = np.matrix([[np.cos(theta_rad), -np.sin(theta_rad)], [np.sin(theta_rad), np.cos(theta_rad)]])
+    #     for streamline in streamlines:
+    #         for i in range(len(streamline[0])):
+    #             vector_coord = np.array([streamline[0][i], streamline[1][i]])
+    #             vector_coord_rotado = np.dot(R, vector_coord)
+    #             streamline[0][i] = vector_coord_rotado.getA1()[0]
+    #             streamline[1][i] = vector_coord_rotado.getA1()[1]
+    #             vector_vel = np.array([streamline[4][i], streamline[5][i]])
+    #             vector_vel_rotado = np.dot(R, vector_vel)
+    #             streamline[4][i] = vector_vel_rotado.getA1()[0]
+    #             streamline[5][i] = vector_vel_rotado.getA1()[1]
+    #     return streamlines
 
     def calc_mod(self, coord):
 

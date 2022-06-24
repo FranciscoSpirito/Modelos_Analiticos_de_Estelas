@@ -5,7 +5,7 @@ import numpy as np
 class Coord(object):
 
     def __repr__(self):
-        return str(self.x)
+        return str(self.x, self.y, self.z)
 
     def __init__(self, arreglo):
         self.x = arreglo[0]

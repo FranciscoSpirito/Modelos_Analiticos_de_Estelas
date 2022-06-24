@@ -135,7 +135,7 @@ class Estela(object):
                 a, b, c = 1, -u_inf.u_perfil,  IntC / IntA
                 Uc1 = (-b + np.sqrt(float(b**2 - 4*a*c))) / (2 * a)
                 a, b, c = IntA, -IntB, IntC
-                Uc11 = (-b + np.sqrt(float(b ** 2 - 4 * a * c))) / (2 * a)
+                # Uc11 = (-b + np.sqrt(float(b ** 2 - 4 * a * c))) / (2 * a)
                 # Uc2 = (-b - np.sqrt(float(b**2 - 4*a*c))) / (2 * a)
                 Uc = Uc1
                 # print(Uc1, Uc2)
@@ -210,7 +210,7 @@ class Estela(object):
                 suma = 0
                 u_0 = iso_s.calc_mod(self.coordenadas[i])
                 for j in range(len(self.turbinas_izquierda)):
-                    suma +=  self.deficits[i + len(self.coordenadas) * j] * np.linalg.norm(self.turbinas_izquierda[j].U_f_base)
+                    suma += self.deficits[i + len(self.coordenadas) * j] * np.linalg.norm(self.turbinas_izquierda[j].U_f_base)
                 if suma < u_0:
                     self.vel_estela[i] = u_0 - suma
                 else:

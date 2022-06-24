@@ -4,16 +4,17 @@ from __future__ import division
 from Modelo import Modelo
 from numpy import exp
 
-class Gaussiana(Modelo):
+class Gaussiano(Modelo):
 
     def __init__(self):
-        super(Gaussiana, self).__init__()
-        # Ajuste Gaussiano ley de crecimiento
-        self.k_estrella = 0.011506
-        self.epsilon = 0.317822
-        # Ajuste Gaussiano Simple
-        # self.k_estrella = 0.011001
-        # self.epsilon = 0.311072
+        super(Gaussiano, self).__init__()
+        # # Ajuste Ley de Crecimiento
+        # self.k_estrella = 0.007386505410848257
+        # self.epsilon = 0.33646115866659930
+
+        # Ajuste Lineal
+        self.k_estrella = 0.00764365969944488
+        self.epsilon = 0.3223552466816117
     def evaluar_deficit_normalizado(self, turbina, coord_selec):
         # sigma_n es sigma/d_0
         sigma_n = (self.k_estrella * (abs(turbina.coord.x - coord_selec.x)/turbina.d_0) + self.epsilon)

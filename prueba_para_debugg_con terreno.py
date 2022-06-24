@@ -1,12 +1,12 @@
 from __future__ import division
 import matplotlib.pyplot as plt
 import numpy as np
-from Parque_de_turbinas import Parque_de_turbinas
+from ParqueEolico import ParqueEolico
 from Turbina_Rawson import Turbina_Rawson
 from Coord import Coord
 from U_inf import U_inf
-from Gaussiana_adaptado_al_Terreno import Gaussiana_adaptado_al_Terreno
-from Iso_Superficie import Iso_Superficie
+from GaussianoAdaptadoTerreno import GaussianoAdaptadoTerreno
+from IsoSuperficie import IsoSuperficie
 from calcular_u_en_coord_con_terreno import calcular_u_con_terreno
 from calcular_potencia_del_parque_con_terreno import calcular_potencia_del_parque_con_terreno
 from load_txt_datos import cargar_datos
@@ -15,11 +15,11 @@ from load_txt_datos import cargar_datos
 
 d0 = 90
 
-# Carga datos desdes .raw o .txt e inicializa la clase Iso_Superficie
+# Carga datos desdes .raw o .txt e inicializa la clase IsoSuperficie
 ruta  = r"C:\Users\chesp\Documents\Ingenieria Mecanica\Tesis\Modelos_Analiticos_de_Estelas\Datos_Rawson_sin_Turbinas\U_superficie_gondolas.Dir.270.00.U8.50.raw"
 xl, yl, zl, ul, vl, wl = cargar_datos('isosuperficie', ruta)
 x, y, z, u, v, w = np.array(xl), np.array(yl), np.array(zl), np.array(ul), np.array(vl), np.array(wl)
-iso_s = Iso_Superficie(x, y, z, u, v, w)
+iso_s = IsoSuperficie(x, y, z, u, v, w)
 # Genera malla mas comoda y menos densa
 iso_s.new_grid(100, d0)
 
@@ -42,13 +42,13 @@ turbinas_list  = cargar_datos('coordenadas_turbinas', ruta)
 fig , axes = plt.subplots(1,2)
 
 
-gaussiana_adaptado_al_terreno = Gaussiana_adaptado_al_Terreno()
+gaussiana_adaptado_al_terreno = GaussianoAdaptadoTerreno()
 
 # Define el tipo de perfil de velocidades cte o log
 z_mast, z_0, perfil = turbinas_list[0].coord.z, 0.01, 'cte'
 u_inf = U_inf(z_mast, z_0, perfil)
 
-parque_de_turbinas = Parque_de_turbinas(turbinas_list, z_0, z_mast)
+parque_de_turbinas = ParqueEolico(turbinas_list, z_0, z_mast)
 
 # Define cantidad de puntos y divide el actuador discal en diferenciales similares
 cantidad_de_puntos = 5

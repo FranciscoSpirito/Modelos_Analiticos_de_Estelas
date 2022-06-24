@@ -1,12 +1,12 @@
 from __future__ import division
 import matplotlib.pyplot as plt
 import numpy as np
-from Parque_de_turbinas import Parque_de_turbinas
+from ParqueEolico import ParqueEolico
 from Turbina_Rawson import Turbina_Rawson
 from Coord import Coord
 from U_inf import U_inf
-from Gaussiana_adaptado_al_Terreno import Gaussiana_adaptado_al_Terreno
-from Iso_Superficie import Iso_Superficie
+from GaussianoAdaptadoTerreno import GaussianoAdaptadoTerreno
+from IsoSuperficie import IsoSuperficie
 from calcular_u_en_coord_con_terreno import calcular_u_con_terreno
 from calcular_potencia_del_parque_con_terreno import calcular_potencia_del_parque_con_terreno
 from load_txt_datos import cargar_datos
@@ -38,7 +38,7 @@ for ruta in rutas:
      u = np.array(ul)
      v = np.array(vl)
      w = np.array(wl)
-     iso_s = Iso_Superficie(x, y, z, u, v, w)
+     iso_s = IsoSuperficie(x, y, z, u, v, w)
      isoSuperficies.append(iso_s)
 
 angulos = [0, 22.5, 45, 67.5, 90, 112.5, 135, 157.5, 180, 202.5, 225, 247.5, 270, 292.5, 315, 337.5]
@@ -51,12 +51,12 @@ d0 = turbinas_list[0].d_0
 
 for iso_s, angulo in zip(isoSuperficies, angulos):
 
-    gaussiana_adaptado_al_terreno = Gaussiana_adaptado_al_Terreno()
+    gaussiana_adaptado_al_terreno = GaussianoAdaptadoTerreno()
 
     z_mast, z_0, perfil = turbinas_list[0].coord.z, 0.01, 'cte'
     u_inf = U_inf(z_mast, z_0, perfil)
 
-    parque_de_turbinas = Parque_de_turbinas(turbinas_list, z_0, z_mast)
+    parque_de_turbinas = ParqueEolico(turbinas_list, z_0, z_mast)
 
     # Define cantidad de puntos y divide el actuador discal en diferenciales similares
     cantidad_de_puntos = 10
@@ -78,7 +78,7 @@ for iso_s, angulo in zip(isoSuperficies, angulos):
     iso_s.flujo_base_turbinas(turbinas_list)
 
     # Calcula CT, CP, P de las turbinas
-    data_prueba = calcular_potencia_del_parque_con_terreno(gaussiana_adaptado_al_terreno, 'Metodo_CTerreno', parque_de_turbinas, u_inf, iso_s, lista_coord_normalizadas,lista_dAi_normalizados)
+    data_prueba = calcular_potencia_del_parque_con_terreno(gaussiana_adaptado_al_terreno, 'Metodo_CTerreno', parque_de_turbinas, iso_s, lista_coord_normalizadas,lista_dAi_normalizados)
 
     # potencia nominal cuando la turbina trabaja con un viento de 8.2 m/s
     potencia_mast = 1800*1000

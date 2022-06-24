@@ -1,9 +1,9 @@
 from __future__ import division
 import numpy as np
-from Gaussiana import Gaussiana
+from Gaussiano import Gaussiano
 from Jensen import Jensen
 from Frandsen import Frandsen
-from Parque_de_turbinas import Parque_de_turbinas
+from ParqueEolico import ParqueEolico
 from Turbina_Rawson import Turbina_Rawson
 from Coord import Coord
 from U_inf import U_inf
@@ -17,7 +17,7 @@ Se realiza una prueba, igual a prueba rawson altura
 donde se cambia el metodo de integrar 
 """
 
-gaussiana = Gaussiana()
+gaussiana = Gaussiano()
 D = 90
 
 
@@ -37,7 +37,7 @@ u_inf = U_inf(z_mast, z_0, perfil)
 u_inf.u_mast = 8.2
 coord_u = Coord([0,0,180])
 u_inf.perfil_flujo_base(coord_u)
-parque_de_turbinas = Parque_de_turbinas(turbinas_list, z_0, z_mast)
+parque_de_turbinas = ParqueEolico(turbinas_list, z_0, z_mast)
 
 # i=1
 # for turbina in parque_de_turbinas.turbinas:

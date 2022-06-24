@@ -1,11 +1,11 @@
 from __future__ import division
 import matplotlib.pyplot as plt
 import numpy as np
-from Parque_de_turbinas import Parque_de_turbinas
+from ParqueEolico import ParqueEolico
 from Turbina_Rawson import Turbina_Rawson
 from Coord import Coord
 from U_inf import U_inf
-from Gaussiana import Gaussiana
+from Gaussiano import Gaussiano
 from calcular_potencia_del_parque_deterministica import calcular_potencia_del_parque_integral_deterministica
 from load_txt_datos import cargar_datos
 
@@ -19,7 +19,7 @@ d0 = turbinas_list[0].d_0
 
 for angulo in angulos:
 
-    gaussiana = Gaussiana()
+    gaussiana = Gaussiano()
 
     # Define el tipo de perfil de velocidades cte o log
     perfil = 'cte'
@@ -34,7 +34,7 @@ for angulo in angulos:
     # z_0 de la superficie
     z_0 = 0.01
 
-    parque_de_turbinas = Parque_de_turbinas(turbinas_list, z_0, z_mast)
+    parque_de_turbinas = ParqueEolico(turbinas_list, z_0, z_mast)
     parque_de_turbinas.rotar(angulo)
     # Define cantidad de puntos y divide el actuador discal en diferenciales similares
     cantidad_de_puntos = 10

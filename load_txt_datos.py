@@ -29,11 +29,11 @@ def cargar_datos(tipo, ruta):
 
 
     elif tipo == 'gaussiano':
-        datos_isosuperficie = np.loadtxt(ruta, delimiter=',', skiprows=1)
-        y = datos_isosuperficie[:, 0]
-        u = datos_isosuperficie[:, 1]
-        v = datos_isosuperficie[:, 2]
-        w = datos_isosuperficie[:, 3]
+        datos_Gaussiano = np.loadtxt(ruta, delimiter=',', skiprows=1)
+        y = datos_Gaussiano[:, 0]
+        u = datos_Gaussiano[:, 1]
+        v = datos_Gaussiano[:, 2]
+        w = datos_Gaussiano[:, 3]
 
         return y, u, v, w
 
